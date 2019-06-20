@@ -1,2 +1,0 @@
-# animap
-Created with CodeSandbox

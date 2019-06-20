@@ -1,0 +1,50 @@
+import * as React from 'react'
+import initRegl from 'regl'
+
+const attributes = {
+  position: [[-1, 1], [1, 1], [-1, -1], [1, -1], [1, 1], [-1, -1]],
+}
+
+const frag = `
+  precision mediump float;
+  uniform sampler2D texture;
+  varying vec2 uv;
+  void main () {
+    gl_FragColor = texture2D(texture, uv);
+  }`
+
+const vert = `
+  precision mediump float;
+  attribute vec2 position;
+  varying vec2 uv;
+  void main () {
+    uv = position;
+    gl_Position = vec4(2.0*uv.x - 1.0, 1.0-2.0*uv.y, 0, 1);
+  }`
+
+interface TextureProps {
+  data: number[]
+}
+
+export type Props = TextureProps & React.HTMLProps<HTMLCanvasElement>
+class Texture extends React.Component<Props> {
+  draw = (node: HTMLCanvasElement) => {
+    const regl = initRegl(node)
+    regl({
+      vert,
+      frag,
+      attributes,
+      uniforms: {
+        color: [1, 0, 0, 1],
+        texture: regl.texture(this.props.data),
+      },
+      count: attributes.position.length,
+    })()
+  }
+
+  render() {
+    return <canvas {...this.props} ref={this.draw} />
+  }
+}
+
+export default Texture
