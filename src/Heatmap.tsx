@@ -45,8 +45,8 @@ function getPixels({
   color = (id: any) => id,
   data = [255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255],
   range: {
-    max = Math.min(...data.flat()),
-    min = Math.max(...data.flat()),
+    max = Math.max(...data.flat()),
+    min = Math.min(...data.flat()),
   } = {},
 }:args = {} ) {
   const colorize = toColorInterpolator(value =>
@@ -61,7 +61,7 @@ function getPixels({
     }
     return pixels
   } else {
-    return data.map(colorize)
+    return (data as any).deepMap(colorize)
   }
 }
 
