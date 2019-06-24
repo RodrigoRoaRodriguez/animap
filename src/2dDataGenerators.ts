@@ -20,7 +20,7 @@ export const squareMatrix = (side = 3) =>
  * @param  {Number} radius       Determines the speed of value falloff
  * @return {Array}      A 2D convolution square matrix.
  */
-export function gauss2dArray(size, radius = 3) {
+export function gauss2dArray(size = 2, radius = 3) {
   const length = size * size
   const matrix = Array(length).fill(0)
   // Calculate the top left corner and mirror it for the other three sectors
@@ -46,7 +46,7 @@ export function gauss2dArray(size, radius = 3) {
 export const squareArray = <T>(array: T[]) => Array(array.length).fill(array)
 
 // Normalized linear range with n steps
-export const normRange = size => [...Array(size)].map((_, i) => i / (size - 1))
+export const normRange = (size: number) => [...Array(size)].map((_, i) => i / (size - 1))
 
 // sinewave
 export const sinewave = ({ size = 1, time = 0, periods = 1 } = {}) => {
@@ -63,15 +63,15 @@ export const sinewave = ({ size = 1, time = 0, periods = 1 } = {}) => {
 
 // saw-tooth
 export const sawTooth = ({ size = 20, periods = 4 } = {}) =>
-  new XYMatrix({ size }).map(n => n % (size / periods))
+  new XYMatrix({ size }).deepMap(n => n % (size / periods))
 
 // square
 export const square = ({ size = 20, periods = 4 } = {}) =>
-  new XYMatrix({ size }).map(n => Math.floor(n / (size + 1 - periods)) % 2)
+  new XYMatrix({ size }).deepMap(n => Math.floor(n / (size + 1 - periods)) % 2)
 
 // triangle
 export const triangle = ({ size = 10 } = {}) => new XYMatrix({ size })
 
-export function gaussMatrix(size, radius = 2) {
+export function gaussMatrix(size?: number, radius = 2) {
   return squareWrap(gauss2dArray(size, radius))
 }
