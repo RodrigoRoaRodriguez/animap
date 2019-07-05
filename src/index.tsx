@@ -50,9 +50,9 @@ const App = () => (
     <Sub>Keep working to see some magic happen 🌈✨</Sub>
     {[
       // flatArray,
-      // sinewave({ size: 10, time: 0.9, periods: 2 }),
-      sawTooth(),
-      square(),
+      sinewave({ size: 100, time: 0, periods: 1 }),
+      sawTooth({ periods: 1 }),
+      square({ size: 100, time: 0, periods: 5 }),
       // triangle(),
       // new XYMatrix({ size: 10 }),
       // gaussMatrix(10, 2),
