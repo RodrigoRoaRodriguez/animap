@@ -26,7 +26,7 @@ interface TextureProps {
   data: number[]
 }
 
-export type Props = TextureProps & React.HTMLProps<HTMLCanvasElement>
+export type Props = TextureProps & React.HTMLAttributes<HTMLCanvasElement>
 class Texture extends React.Component<Props> {
   draw = (node: HTMLCanvasElement) => {
     const regl = initRegl(node)
