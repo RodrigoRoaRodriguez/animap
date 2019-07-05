@@ -2,7 +2,7 @@ import * as React from 'react'
 import Texture from './Texture'
 import * as d3 from 'd3'
 
-export type Color = [number, number, number, number]
+export type Color = [number, number, number, number] //? 
 
 export interface HeatmapData {
   width?: number
@@ -11,7 +11,7 @@ export interface HeatmapData {
 }
 
 interface ownProps {
-  data: number[] 
+  data: number[] | HeatmapData
   range? : { max: number, min: number}
   color: (value: number) => string
   ref?: any
@@ -33,7 +33,7 @@ function normalize(max = 1, min = 0) {
 
 type args = {
   color?: (id: any) => any;
-  data?: number[];
+  data?: number[] | HeatmapData;
   range?: {
       max?: number;
       min?: number;
@@ -45,8 +45,8 @@ function getPixels({
   color = (id: any) => id,
   data = [255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255],
   range: {
-    max = Math.max(...data.flat()),
-    min = Math.min(...data.flat()),
+    max = Math.max(...(Array.isArray(data) ? data.flat() : data.data.flat())),
+    min = Math.min(...(Array.isArray(data) ? data.flat() : data.data.flat())),
   } = {},
 }:args = {} ) {
   const colorize = toColorInterpolator(value =>
@@ -68,7 +68,7 @@ function getPixels({
 // Ideas to make it performant:
 // 1. Use hooks and bake in all the data into pixels
 // 2. Rerender the texture not the heatmap
-// 3. Send in the whole anymation
+// 3. Send in the whole animation
 // 4. Frame-caching
 const Heatmap = ({ color, data, range, ...canvasProps }: props) => (
   <Texture {...canvasProps} data={getPixels({ color, data, range })} />
