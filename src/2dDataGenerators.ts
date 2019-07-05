@@ -43,31 +43,20 @@ export function gauss2dArray(size = 2, radius = 3) {
   return matrix
 }
 
-export const squareArray = <T>(array: T[]) => Array(array.length).fill(array)
+export const squareArray = <T>(array: T[]) => Array(array.length).fill(array) as T[][]
 
 // Normalized linear range with n steps
 export const normRange = (size: number) => [...Array(size)].map((_, i) => i / (size - 1))
 
 // sinewave
-export const sinewave = ({ size = 1, time = 0, periods = 1 } = {}) => {
-  const row = normRange(size).map(
-    value => Math.sin((value + time) * 2 * Math.PI * periods) / 2 + 0.5,
-  )
-
-  return squareWrap(
-    Array(size)
-      .fill(row)
-      .flat(),
-  )
-}
+export const sinewave = ({ size = 1, time = 0, periods = 1 } = {}) => new XYMatrix({ size }).deepMap(n => Math.sin(n/(size-1)*Math.PI*2*periods))
 
 // saw-tooth
 export const sawTooth = ({ size = 20, periods = 4 } = {}) =>
   new XYMatrix({ size }).deepMap(n => n % (size / periods))
 
 // square
-export const square = ({ size = 20, periods = 4 } = {}) =>
-  new XYMatrix({ size }).deepMap(n => Math.floor(n / (size + 1 - periods)) % 2)
+export const square = ({ size = 1, time = 0, periods = 1 } = {}) => new XYMatrix({ size }).deepMap(n => (Math.sin(n/(size-1)*Math.PI*2*periods) > 0 ? 1 : -1))
 
 // triangle
 export const triangle = ({ size = 10 } = {}) => new XYMatrix({ size })
