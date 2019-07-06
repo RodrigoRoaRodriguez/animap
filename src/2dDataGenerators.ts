@@ -58,8 +58,11 @@ export const sawTooth = ({ size = 20, periods = 4 } = {}) =>
 // square
 export const square = ({ size = 1, time = 0, periods = 1 } = {}) => new XYMatrix({ size }).deepMap(n => (Math.sin(n/(size-1)*Math.PI*2*periods) > 0 ? 1 : -1))
 
+// sawtooth
+export const sawtooth = ({ size = 100, periods = 2 } = {}) => new XYMatrix({ size }).deepMap(n => ((size - Math.abs(n % (size/periods) - size))/size ))
+
 // triangle
-export const triangle = ({ size = 10 } = {}) => new XYMatrix({ size })
+export const triangle = ({ size = 100, periods = 2 } = {}) => new XYMatrix({ size }).deepMap(n => 1 - Math.abs((n*periods*2/(size-1)) % 2 - 1))
 
 export function gaussMatrix(size?: number, radius = 2) {
   return squareWrap(gauss2dArray(size, radius))
