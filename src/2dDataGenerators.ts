@@ -85,6 +85,22 @@ export const horizontal = {
   square: horizontalMap(square),
 }
 
+/**
+ * Radially maps a Waveform function over a square matrix
+ * @param waveform function mapped over the matrix to describe the graph shape
+ */
+const radialMap = (waveform: Waveform) => ({ size = 50, periods = 4 } = {}) =>
+  new XYMatrix({ size }).map2d((_, {x,y}) => waveform({ periods, size, value: Math.sqrt((x-(size-1)/2)**2 + (y-(size-1)/2)**2)}))
+
+/* Generators */ 
+export const radial = {
+  triangle: radialMap(triangle),
+  sawtooth: radialMap(sawtooth),
+  sine: radialMap(sine),
+  square: radialMap(square),
+}
+
+
 export function gaussMatrix(size?: number, radius = 2) {
   return squareWrap(gauss2dArray(size, radius))
 }
