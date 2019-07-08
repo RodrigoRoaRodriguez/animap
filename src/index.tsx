@@ -3,12 +3,7 @@ import { render } from 'react-dom'
 import * as d3 from 'd3'
 import styled, { createGlobalStyle } from 'styled-components'
 import {
-  flatArray,
-  gaussMatrix,
-  sinewave,
-  sawTooth,
-  square,
-  triangle,
+  horizontal
 } from './2dDataGenerators'
 import Heatmap from './Heatmap'
 import { XYMatrix } from './utils'
@@ -49,11 +44,10 @@ const App = () => (
     <Title>Heatmap</Title>
     <Sub>Keep working to see some magic happen 🌈✨</Sub>
     {[
-      // flatArray,
-      // sinewave({ size: 100, time: 0, periods: 1 }),
-      // sawTooth({ periods: 1 }),
-      // square({ size: 100, time: 0, periods: 5 }),
-      triangle(),
+      horizontal.triangle(),
+      horizontal.sawtooth(),
+      horizontal.sine(),
+      horizontal.square(),
       // new XYMatrix({ size: 10 }),
       // gaussMatrix(10, 2),
     ].map(data => (

@@ -43,26 +43,47 @@ export function gauss2dArray(size = 2, radius = 3) {
   return matrix
 }
 
-export const squareArray = <T>(array: T[]) => Array(array.length).fill(array) as T[][]
+export const squareArray = <T>(array: T[]) =>
+  Array(array.length).fill(array) as T[][]
 
 // Normalized linear range with n steps
-export const normRange = (size: number) => [...Array(size)].map((_, i) => i / (size - 1))
+export const normRange = (size: number) =>
+  [...Array(size)].map((_, i) => i / (size - 1))
 
-// sinewave
-export const sinewave = ({ size = 1, time = 0, periods = 1 } = {}) => new XYMatrix({ size }).deepMap(n => Math.sin(n/(size-1)*Math.PI*2*periods))
+/* Waveforms */
+type Waveform = (args: {
+  periods: number
+  size: number
+  value: number
+}) => number
 
-// saw-tooth
-export const sawTooth = ({ size = 20, periods = 4 } = {}) =>
-  new XYMatrix({ size }).deepMap(n => n % (size / periods))
+const sawtooth: Waveform = ({ periods, size, value }) =>
+  (size - Math.abs((value % (size / periods)) - size)) / size
 
-// square
-export const square = ({ size = 1, time = 0, periods = 1 } = {}) => new XYMatrix({ size }).deepMap(n => (Math.sin(n/(size-1)*Math.PI*2*periods) > 0 ? 1 : -1))
+const sine: Waveform = ({ periods, size, value }) =>
+  Math.sin((value / (size - 1)) * Math.PI * 2 * periods)
 
-// sawtooth
-export const sawtooth = ({ size = 100, periods = 2 } = {}) => new XYMatrix({ size }).deepMap(n => ((size - Math.abs(n % (size/periods) - size))/size ))
+const square: Waveform = ({ periods, size, value }) =>
+  Math.sin((value / (size - 1)) * Math.PI * 2 * periods) > 0 ? 1 : -1
 
-// triangle
-export const triangle = ({ size = 100, periods = 2 } = {}) => new XYMatrix({ size }).deepMap(n => 1 - Math.abs((n*periods*2/(size-1)) % 2 - 1))
+const triangle: Waveform = ({ periods, size, value }) =>
+  1 - Math.abs((((value * periods * 2) / (size - 1)) % 2) - 1)
+
+
+/**
+ * Horizontally maps a Waveform function over a square matrix
+ * @param waveform a waveform function mapped over the matrix
+ */
+const horizontalMap = (waveform: Waveform) => ({ size = 50, periods = 2 } = {}) =>
+  new XYMatrix({ size }).map2d(value => waveform({ periods, size, value }))
+
+/* Generators */
+export const horizontal = {
+  triangle: horizontalMap(triangle),
+  sawtooth: horizontalMap(sawtooth),
+  sine: horizontalMap(sine),
+  square: horizontalMap(square),
+}
 
 export function gaussMatrix(size?: number, radius = 2) {
   return squareWrap(gauss2dArray(size, radius))

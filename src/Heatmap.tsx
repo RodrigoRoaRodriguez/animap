@@ -11,7 +11,7 @@ export interface HeatmapData {
 }
 
 interface ownProps {
-  data: number[] | HeatmapData
+  data: number[][] | HeatmapData
   range? : { max: number, min: number}
   color: (value: number) => string
   ref?: any
@@ -33,7 +33,7 @@ function normalize(max = 1, min = 0) {
 
 type args = {
   color?: (id: any) => any;
-  data?: number[] | HeatmapData;
+  data?: number[][] | HeatmapData;
   range?: {
       max?: number;
       min?: number;
@@ -43,7 +43,7 @@ type args = {
 // TODO: nested array as data
 function getPixels({
   color = (id: any) => id,
-  data = [255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 0, 0, 0, 255],
+  data = [[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255], [0, 0, 0, 255]],
   range: {
     max = Math.max(...(Array.isArray(data) ? data.flat() : data.data.flat())),
     min = Math.min(...(Array.isArray(data) ? data.flat() : data.data.flat())),
@@ -61,7 +61,7 @@ function getPixels({
     }
     return pixels
   } else {
-    return (data as any).deepMap(colorize)
+    return (data as any).map2d(colorize)
   }
 }
 
