@@ -57,6 +57,8 @@ type Waveform = (args: {
   value: number
 }) => number
 
+
+
 const sawtooth: Waveform = ({ periods, size, value }) =>
   (size - Math.abs((value % (size / periods)) - size)) / size
 
@@ -65,6 +67,9 @@ const sine: Waveform = ({ periods, size, value }) =>
 
 const square: Waveform = ({ periods, size, value }) =>
   Math.sin((value / (size - 1)) * Math.PI * 2 * periods) > 0 ? 1 : -1
+
+const gauss: Waveform = ({ periods, size, value }) =>
+  Math.exp(-1 * (value / (2 * (size-1) ** 2)))
 
 const triangle: Waveform = ({ periods, size, value }) =>
   1 - Math.abs((((value * periods * 2) / (size - 1)) % 2) - 1)
@@ -79,6 +84,7 @@ const horizontalMap = (waveform: Waveform) => ({ size = 50, periods = 2 } = {}) 
 
 /* Generators */
 export const horizontal = {
+  gauss: horizontalMap(gauss),
   triangle: horizontalMap(triangle),
   sawtooth: horizontalMap(sawtooth),
   sine: horizontalMap(sine),
@@ -89,11 +95,12 @@ export const horizontal = {
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const radialMap = (waveform: Waveform) => ({ size = 50, periods = 4 } = {}) =>
-  new XYMatrix({ size }).map2d((_, {x,y}) => waveform({ periods, size, value: Math.sqrt((x-(size-1)/2)**2 + (y-(size-1)/2)**2)}))
+const radialMap = (waveform: Waveform) => ({ size = 50, periods = 2, transform= (id=0)=>id } = {}) =>
+  new XYMatrix({ size }).map2d((_, {x,y}) => transform(waveform({ periods, size, value: Math.sqrt((x-(size-1)/2)**2 + (y-(size-1)/2)**2)})))
 
 /* Generators */ 
 export const radial = {
+  gauss: radialMap(gauss),
   triangle: radialMap(triangle),
   sawtooth: radialMap(sawtooth),
   sine: radialMap(sine),

@@ -2,9 +2,12 @@ import * as React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
 import styled, { createGlobalStyle } from 'styled-components'
-import { radial } from './2dDataGenerators'
+import { 
+  horizontal,
+  radial
+} from './2dDataGenerators'
+import { addNoise } from './utils'
 import Heatmap from './Heatmap'
-import { XYMatrix } from './utils'
 
 const GlobalStyles = createGlobalStyle`
   html {
@@ -14,8 +17,7 @@ const GlobalStyles = createGlobalStyle`
     text-align: center;
   }
   canvas {
-    margin: .25em auto;
-    display: block;
+    margin: 1vw;
   }
 `
 
@@ -32,9 +34,11 @@ const Sub = styled.h2`
 
 export const PADDING = 20
 export const getSize = () => {
-  let size = Math.min(window.innerWidth, window.innerHeight) / 2 - PADDING
+  let size = Math.min(window.innerWidth, window.innerHeight) / 2.1 - PADDING
   return { width: size, height: size }
 }
+
+const transform = addNoise(0.5)
 
 const App = () => (
   <React.Fragment>
@@ -42,10 +46,11 @@ const App = () => (
     <Title>Heatmap</Title>
     <Sub>Keep working to see some magic happen 🌈✨</Sub>
     {[
-      radial.triangle(),
-      radial.sawtooth(),
-      radial.sine(),
-      radial.square(),
+      radial.gauss({transform}),
+      radial.triangle({transform}),
+      radial.sawtooth({transform}),
+      radial.sine({transform}),
+      radial.square({transform}),
       // new XYMatrix({ size: 10 }),
       // gaussMatrix(10, 2),
     ].map(data => (
