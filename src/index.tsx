@@ -2,10 +2,7 @@ import * as React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
 import styled, { createGlobalStyle } from 'styled-components'
-import { 
-  horizontal,
-  radial
-} from './2dDataGenerators'
+import { radial } from './2dDataGenerators'
 import { addNoise } from './utils'
 import Heatmap from './Heatmap'
 
@@ -38,7 +35,9 @@ export const getSize = () => {
   return { width: size, height: size }
 }
 
-const transform = addNoise(0.5)
+const options = {
+  transform: addNoise(1)
+}
 
 const App = () => (
   <React.Fragment>
@@ -46,11 +45,11 @@ const App = () => (
     <Title>Heatmap</Title>
     <Sub>Keep working to see some magic happen 🌈✨</Sub>
     {[
-      radial.gauss({transform}),
-      radial.triangle({transform}),
-      radial.sawtooth({transform}),
-      radial.sine({transform}),
-      radial.square({transform}),
+      // radial.gauss(options),
+      radial.triangle(options),
+      radial.sawtooth(options),
+      radial.sine(options),
+      radial.square(options),
       // new XYMatrix({ size: 10 }),
       // gaussMatrix(10, 2),
     ].map(data => (
