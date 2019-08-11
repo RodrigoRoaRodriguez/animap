@@ -18,12 +18,34 @@ export const horizontal = {
   square: horizontalMap(square),
 }
 
+
+type Coords = {
+  x: number;
+  y: number;
+};
+
 /**
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const radialMap = (waveform: Waveform) => ({ size = 50, periods = 2, transform= (value=0) => value } = {}) =>
-  new XYMatrix({ size }).map2d((_, {x,y}, matrix) => transform(waveform({ periods, size, value: Math.sqrt((x-(size-1)/2)**2 + (y-(size-1)/2)**2)})))
+const matrixMap = (valueFn: (xy: Coords, size: number) => number) => (waveform: Waveform) => ({ size = 50, periods = 2, transform= (value=0) => value, time=0 } = {}) =>
+new XYMatrix({ size }).map2d((_, coords) => transform(waveform({ periods, size, value: (time*size + valueFn(coords, size))})))
+
+/**
+ * Measures Euclidean distance between the center of the chart and a coordianate
+ * (x,y), assuming integer non-normalized device coordinates from 0 to size.
+ * @param coords 2d coordinates
+ * @param size length of the coordin
+ */
+const byDistance = ({x,y}:Coords, size=1) =>
+Math.sqrt((x-(size-1)/2)**2 + (y-(size-1)/2)**2)
+
+/**
+ * Radially maps a Waveform function over a square matrix
+ * @param waveform function mapped over the matrix to describe the graph shape
+ */
+// const radialMap = matrixMap(byDistance)
+const radialMap = matrixMap(({x})=>x)
 
 /* Generators */ 
 export const radial = {

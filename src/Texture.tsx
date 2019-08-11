@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useRef, useEffect } from 'react'
 import initRegl from 'regl'
 
 const attributes = {
@@ -25,26 +26,31 @@ const vert = `
 interface TextureProps {
   data: number[]
 }
-
 export type Props = TextureProps & React.HTMLAttributes<HTMLCanvasElement>
-class Texture extends React.Component<Props> {
-  draw = (node: HTMLCanvasElement) => {
-    const regl = initRegl(node)
-    regl({
-      vert,
-      frag,
-      attributes,
-      uniforms: {
-        color: [1, 0, 0, 1],
-        texture: regl.texture(this.props.data),
-      },
-      count: attributes.position.length,
-    })()
-  }
 
-  render() {
-    return <canvas {...this.props} ref={this.draw} />
-  }
+
+const Texture = (props: Props) => {
+  const node = useRef(null)
+  const regl:any = useRef(false);
+
+  useEffect( ()=>{
+    if (!regl.current) {
+      regl.current = initRegl(node.current as any)
+    }
+    if (node.current) {
+      regl.current({
+        vert,
+        frag,
+        attributes,
+        uniforms: {
+          color: [1, 0, 0, 1],
+          texture: regl.current.texture(props.data),
+        },
+        count: attributes.position.length,
+      })()
+    }
+  })
+  return <canvas {...props} ref={node} />
 }
 
 export default Texture

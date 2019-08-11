@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Texture from './Texture'
 import * as d3 from 'd3'
-
+import { useAnimation } from './useAnimation'
 export type Color = [number, number, number, number] //? 
 
 export interface HeatmapData {
@@ -70,8 +70,9 @@ function getPixels({
 // 2. Rerender the texture not the heatmap
 // 3. Send in the whole animation
 // 4. Frame-caching
-const Heatmap = ({ color, data, range, ...canvasProps }: props) => (
+const Heatmap = ({ color, data, range, ...canvasProps }: props) => {
+  return (
   <Texture {...canvasProps} data={getPixels({ color, data, range })} />
-)
+)}
 
 export default Heatmap
