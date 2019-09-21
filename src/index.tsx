@@ -5,7 +5,15 @@ import styled, { createGlobalStyle } from 'styled-components'
 import { radial } from './2dDataGenerators'
 import { addNoise } from './utils'
 import Heatmap from './Heatmap'
+
 import { useAnimation } from './useAnimation'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
+import { createMuiTheme } from '@material-ui/core'
+import { ThemeProvider } from '@material-ui/styles'
 
 const GlobalStyles = createGlobalStyle`
   html {
@@ -47,25 +55,57 @@ const options = {
 //   radial.sawtooth({...options, time: 0}),
 // ]
 
+function Picker () {
+  const [value, setValue] = React.useState(Object.keys(radial)[0]);
+  const onChange = (event) => setValue(event.target.value);
+
+  return  (
+    <FormControl component="fieldset">
+    <FormLabel component="legend">Waveform: {value}</FormLabel>
+    <RadioGroup 
+      defaultValue={Object.keys(radial)[0]}
+      aria-label="waveform"
+      name="customized-radios"
+      onChange={onChange}
+      >
+      {
+        Object.keys(radial).map(value => 
+        <FormControlLabel value={value} control={<Radio />} label={value} />
+      )}
+    </RadioGroup>
+  </FormControl>
+  )
+
+}
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+  },
+});
+
 const App = () => {
   const time = useAnimation('linear', 5000, 0);
   console.log(getSize())
   // const data = radial.sawtooth({ ...options, time })
   return (
     <React.Fragment>
-      <GlobalStyles />
-      <Title>Heatmap t = {time} </Title>
-      <Sub>Keep working to see some magic happen 🌈✨</Sub>
-      <Heatmap
-        style={{ ...getSize(), borderRadius: 4 }}
-        data={radial.triangle({...options, time})}
-        color={d3.interpolateHclLong('#012', '#ff6')}
-      />
-      <Heatmap
-        style={{ ...getSize(), borderRadius: 4 }}
-        data={radial.sawtooth({...options, time})}
-        color={d3.interpolateHclLong('#012', '#ff6')}
-      />
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <Title>Heatmap </Title>      
+        <Sub>Keep working to see some magic happen 🌈✨</Sub>
+        <Picker/>
+        {/* <Heatmap
+          style={{ ...getSize(), borderRadius: 4 }}
+          data={radial.triangle({...options, time})}
+          color={d3.interpolateHclLong('#012', '#ff6')}
+        />
+        <Heatmap
+          style={{ ...getSize(), borderRadius: 4 }}
+          data={radial.sawtooth({...options, time})}
+          color={d3.interpolateHclLong('#012', '#ff6')}
+        /> */}
+      </ThemeProvider>
     </React.Fragment>
   )
 }
