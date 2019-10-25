@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 // Some easing functions copied from:
 // https://github.com/streamich/ts-easing/blob/master/src/index.ts
@@ -10,10 +10,9 @@ const easing = {
   exponential: n => Math.pow(2, 10 * (n - 1))
 };
 
-
-// Hook 
+// Hook
 export function useAnimation(
-  easingName = 'linear',
+  easingName = "linear",
   duration = 1000,
   delay = 0
 ) {
@@ -34,10 +33,12 @@ export function useAnimation(
   return [easing[easingName](normalizedTime), reset];
 }
 
-
-
-
-function animationLoop(start:number, duration: number, delay: number, setTime) {
+function animationLoop(
+  start: number,
+  duration: number,
+  delay: number,
+  setTime
+) {
   let animationFrame, stopTimer;
   // Function to be executed on each animation frame
   function onFrame() {
