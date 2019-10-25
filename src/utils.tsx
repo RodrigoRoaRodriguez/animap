@@ -15,3 +15,7 @@ export class XYMatrix extends Array<number[]> {
 
 
 export const addNoise = (magnitude=0) => (value=0) => value + (Math.random() - 0.5) * 2*magnitude;
+
+export function normalize(max = 1, min = 0) {
+  return value => (value - min) / (max - min);
+}

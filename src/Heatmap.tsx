@@ -1,8 +1,9 @@
 import * as React from 'react'
 import Texture from './Texture'
 import * as d3 from 'd3'
-import { useAnimation } from './useAnimation'
 import Button from '@material-ui/core/Button'
+import { useAnimation } from './hooks/useAnimation'
+import { normalize } from './utils'
 export type Color = [number, number, number, number] //? 
 
 export interface HeatmapData {
@@ -13,12 +14,13 @@ export interface HeatmapData {
 
 interface ownProps {
   data: number[][] | HeatmapData
-  range? : { max: number, min: number}
+  range?: { max: number, min: number }
   color: (value: number) => string
   ref?: any
+  time: number
 }
 
-type props =  Omit<React.HTMLProps<HTMLCanvasElement>, keyof ownProps> & ownProps
+type props = Omit<React.HTMLProps<HTMLCanvasElement>, keyof ownProps> & ownProps
 
 function toColorInterpolator(transferFn: (value: number) => string) {
   return function interpolator(number: number) {
@@ -27,19 +29,15 @@ function toColorInterpolator(transferFn: (value: number) => string) {
   }
 }
 
-function normalize(max = 1, min = 0) {
-  return value => (value - min) / (max - min)
-}
-
-
-type args = {
+type Args = {
   color?: (id: any) => any;
   data?: number[][] | HeatmapData;
   range?: {
-      max?: number;
-      min?: number;
+    max?: number;
+    min?: number;
   };
 }
+
 // TODO: non-linear color scales
 // TODO: nested array as data
 function getPixels({
@@ -49,12 +47,12 @@ function getPixels({
     max = Math.max(...(Array.isArray(data) ? data.flat() : data.data.flat())),
     min = Math.min(...(Array.isArray(data) ? data.flat() : data.data.flat())),
   } = {},
-}:args = {} ) {
+}: Args = {}) {
   const colorize = toColorInterpolator(value =>
     color(normalize(max, min)(value)),
   )
 
-  if ((data as any).data) { 
+  if ((data as any).data) {
     const { data: array = data, ...rest } = data as any
     const pixels = {
       ...rest,
@@ -66,14 +64,12 @@ function getPixels({
   }
 }
 
-// Ideas to make it performant:
-// 1. Use hooks and bake in all the data into pixels
-// 2. Rerender the texture not the heatmap
-// 3. Send in the whole animation
-// 4. Frame-caching
 const Heatmap = ({ color, data, range, ...canvasProps }: props) => {
-  return (
-  <Texture {...canvasProps} data={getPixels({ color, data, range })} />
-)}
+  return <Texture {...canvasProps} data={getPixels({ color, data, range })} />
+}
+
+// function areEqual(prevProps, nextProps) {
+//   return prevProps.time === nextProps.time
+// }
 
 export default Heatmap
