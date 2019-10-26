@@ -75,27 +75,25 @@ const App = () => {
   const [time, reset] = useAnimation('linear', 1000)
   // const data = radial.sawtooth({ ...options, time })
   return (
-    <React.Fragment>
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
-        <Title>Heatmap </Title>
-        <Sub>Keep working to see some magic happen 🌈✨</Sub>
-        <h2>time: {Math.round(time * 100)}%</h2>
-        <Picker />
-        <Heatmap
-          onClick={reset}
-          style={{ ...getSize(), borderRadius: 4 }}
-          data={radial.triangle({ ...options, time })}
-          time={time}
-          color={d3.interpolateHclLong('#012', '#ff6')}
-        />
-        {/* <Heatmap
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <Title>Heatmap </Title>
+      <Sub>Keep working to see some magic happen 🌈✨</Sub>
+      <h2>time: {Math.round(time * 100)}%</h2>
+      <Picker />
+      <Heatmap
+        onClick={reset}
+        style={{ ...getSize(), borderRadius: 4 }}
+        data={radial.triangle({ ...options, time })}
+        time={time}
+        color={d3.interpolateHclLong('#012', '#ff6')}
+      />
+      {/* <Heatmap
           style={{ ...getSize(), borderRadius: 4 }}
           data={radial.sawtooth({...options, time})}
           color={d3.interpolateHclLong('#012', '#ff6')}
         /> */}
-      </ThemeProvider>
-    </React.Fragment>
+    </ThemeProvider>
   )
 }
 
