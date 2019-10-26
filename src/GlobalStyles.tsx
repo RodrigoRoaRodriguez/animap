@@ -1,4 +1,4 @@
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from 'styled-components'
 
 export const GlobalStyles = createGlobalStyle`
   html {
@@ -10,4 +10,4 @@ export const GlobalStyles = createGlobalStyle`
   canvas {
     margin: 1vw;
   }
-`;
+`
