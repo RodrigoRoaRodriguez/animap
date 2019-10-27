@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { render } from 'react-dom'
-import App from './App'
+import Providers from './Providers'
 
 const rootElement = document.getElementById('root')
-render(<App />, rootElement)
+render(<Providers />, rootElement)

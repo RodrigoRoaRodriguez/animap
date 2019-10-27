@@ -1,20 +1,17 @@
-import * as React from 'react'
-import { render } from 'react-dom'
-import * as d3 from 'd3'
-import styled from 'styled-components'
-import { radial } from './2dDataGenerators'
-import { addNoise } from './utils'
-import Heatmap from './Heatmap'
-
-import { useAnimation } from './hooks/useAnimation'
+import FormControl from '@material-ui/core/FormControl'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormLabel from '@material-ui/core/FormLabel'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormControl from '@material-ui/core/FormControl'
-import FormLabel from '@material-ui/core/FormLabel'
-import { createMuiTheme } from '@material-ui/core'
-import { ThemeProvider } from '@material-ui/styles'
+import * as d3 from 'd3'
+import * as React from 'react'
+import { useContext } from 'react'
+import styled from 'styled-components'
+import { radial } from './2dDataGenerators'
 import { GlobalStyles } from './GlobalStyles'
+import Heatmap from './Heatmap'
+import { useAnimation } from './hooks/useAnimation'
+import { waveformContext } from './waveformContext'
 
 const Title = styled.h1`
   color: #eef;
@@ -45,55 +42,48 @@ const options = {
 // ]
 
 function Picker() {
-  const [value, setValue] = React.useState(Object.keys(radial)[0])
-  const onChange = event => setValue(event.target.value)
+  const { waveform, setWaveform } = useContext(waveformContext)
+  const onChange = event => setWaveform(event.target.value)
 
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend">Waveform: {value}</FormLabel>
+      <FormLabel component="legend">Waveform: {waveform}</FormLabel>
       <RadioGroup
         defaultValue={Object.keys(radial)[0]}
         aria-label="waveform"
         name="customized-radios"
         onChange={onChange}
       >
-        {Object.keys(radial).map(value => (
-          <FormControlLabel value={value} control={<Radio />} label={value} />
+        {Object.keys(radial).map(waveform => (
+          <FormControlLabel
+            value={waveform}
+            control={<Radio />}
+            label={waveform}
+          />
         ))}
       </RadioGroup>
     </FormControl>
   )
 }
 
-const theme = createMuiTheme({
-  palette: {
-    type: 'dark',
-  },
-})
-
 const App = () => {
+  const { waveform } = useContext(waveformContext)
   const [time, reset] = useAnimation('linear', 1000)
-  // const data = radial.sawtooth({ ...options, time })
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <GlobalStyles />
-      <Title>Heatmap </Title>
+      <Title>Heatmap {waveform}</Title>
       <Sub>Keep working to see some magic happen 🌈✨</Sub>
       <h2>time: {Math.round(time * 100)}%</h2>
       <Picker />
       <Heatmap
         onClick={reset}
         style={{ ...getSize(), borderRadius: 4 }}
-        data={radial.triangle({ ...options, time })}
+        data={radial[waveform]({ ...options, time })}
         time={time}
         color={d3.interpolateHclLong('#012', '#ff6')}
       />
-      {/* <Heatmap
-          style={{ ...getSize(), borderRadius: 4 }}
-          data={radial.sawtooth({...options, time})}
-          color={d3.interpolateHclLong('#012', '#ff6')}
-        /> */}
-    </ThemeProvider>
+    </>
   )
 }
 
