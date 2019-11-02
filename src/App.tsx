@@ -33,7 +33,7 @@ export const getSize = () => {
 const options = {
   // transform: addNoise(0.5),
   // periods: 2,
-  size: 200,
+  size: 150,
 }
 
 // const datasets = [
@@ -41,20 +41,13 @@ const options = {
 //   radial.sawtooth({...options, time: 0}),
 // ]
 
-function Picker() {
-  const [ waveform, setWaveform ] = useContext(waveformContext)
-  const onChange = event => setWaveform(event.target.value)
-
+function Picker({values, onChange}) {
+  const forwardValue = event => onChange(event.target.value)
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend">Waveform: {waveform}</FormLabel>
-      <RadioGroup
-        defaultValue={waveform}
-        aria-label="waveform"
-        name="customized-radios"
-        onChange={onChange}
-      >
-        {Object.keys(radial).map(waveform => (
+      <FormLabel component="legend">Waveform: </FormLabel>
+      <RadioGroup defaultValue={values[0]} onChange={forwardValue} >
+        {values.map(waveform => (
           <FormControlLabel
             value={waveform}
             control={<Radio />}
@@ -67,7 +60,7 @@ function Picker() {
 }
 
 const App = () => {
-  const [ waveform ] = useContext(waveformContext)
+  const [ waveform, setWaveform ] = useContext(waveformContext)
   const [time, reset] = useAnimation({ deps:([waveform])})
   return (
     <>
@@ -75,7 +68,7 @@ const App = () => {
       <Title>Heatmap {waveform}</Title>
       <Sub>Keep working to see some magic happen 🌈✨</Sub>
       <h2>time: {Math.round(time * 100)}%</h2>
-      <Picker />
+      <Picker values={Object.keys(radial)} onChange={setWaveform}  />
       <Heatmap
         onClick={reset}
         style={{ ...getSize(), borderRadius: 4 }}
