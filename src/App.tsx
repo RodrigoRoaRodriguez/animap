@@ -68,7 +68,7 @@ function Picker() {
 
 const App = () => {
   const { waveform } = useContext(waveformContext)
-  const [time, reset] = useAnimation('linear', 1000)
+  const [time, reset] = useAnimation({ deps:([waveform])})
   return (
     <>
       <GlobalStyles />

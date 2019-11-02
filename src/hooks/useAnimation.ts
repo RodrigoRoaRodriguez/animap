@@ -1,23 +1,18 @@
 import { useState, useEffect } from 'react'
 
-// Some easing functions copied from:
-// https://github.com/streamich/ts-easing/blob/master/src/index.ts
-// Hardcode here or pull in a dependency
-const easing = {
-  linear: n => n,
-  elastic: n =>
-    n * (33 * n * n * n * n - 106 * n * n * n + 126 * n * n - 67 * n + 15),
-  exponential: n => Math.pow(2, 10 * (n - 1)),
-}
-
 // Hook
-export function useAnimation(
-  easingName = 'linear',
+export function useAnimation({
+  easing = n => n,
   duration = 1000,
-  delay = 0
-) {
+  delay = 0,
+  deps = [] as any[]
+} = {}) {
   const [elapsed, setTime] = useState(0)
   const [start, setStart] = useState(Date.now())
+
+  const reset = () => setStart(Date.now())
+  // Reset when dependencies change
+  useEffect(reset, deps)
 
   useEffect(
     animationLoop(start, duration, delay, setTime),
@@ -26,11 +21,8 @@ export function useAnimation(
 
   // Normalize, so time is on a scale from 0 to 1
   const normalizedTime = Math.min(1, elapsed / duration)
-
-  const reset = () => setStart(Date.now())
-
   // Return altered value based on our specified easing function
-  return [easing[easingName](normalizedTime), reset]
+  return [easing(normalizedTime), reset]
 }
 
 function animationLoop(
