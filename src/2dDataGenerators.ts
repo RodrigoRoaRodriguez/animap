@@ -15,10 +15,10 @@ const horizontalMap = (waveform: Waveform) => ({
 /* Generators */
 export const horizontal = {
   // gauss: horizontalMap(gauss),
-  triangle: horizontalMap(triangle),
   sawtooth: horizontalMap(sawtooth),
   sine: horizontalMap(sine),
   square: horizontalMap(square),
+  triangle: horizontalMap(triangle),
 }
 
 type Coords = {
@@ -63,8 +63,8 @@ const radialMap = matrixMap(byDistance)
 
 export const radial = {
   // gauss: radialMap(gauss),
-  triangle: radialMap(triangle),
   sawtooth: radialMap(sawtooth),
   sine: radialMap(sine),
   square: radialMap(square),
+  triangle: radialMap(triangle),
 }
