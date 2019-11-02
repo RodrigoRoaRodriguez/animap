@@ -14,7 +14,7 @@ const horizontalMap = (waveform: Waveform) => ({
 
 /* Generators */
 export const horizontal = {
-  gauss: horizontalMap(gauss),
+  // gauss: horizontalMap(gauss),
   triangle: horizontalMap(triangle),
   sawtooth: horizontalMap(sawtooth),
   sine: horizontalMap(sine),
@@ -57,13 +57,12 @@ const byDistance = ({ x, y }: Coords, size = 1) =>
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-// const radialMap = matrixMap(byDistance)
-const radialMap = matrixMap(({ x }) => x)
+const radialMap = matrixMap(byDistance)
 
 /* Generators */
 
 export const radial = {
-  gauss: radialMap(gauss),
+  // gauss: radialMap(gauss),
   triangle: radialMap(triangle),
   sawtooth: radialMap(sawtooth),
   sine: radialMap(sine),
