@@ -42,14 +42,14 @@ const options = {
 // ]
 
 function Picker() {
-  const { waveform, setWaveform } = useContext(waveformContext)
+  const [ waveform, setWaveform ] = useContext(waveformContext)
   const onChange = event => setWaveform(event.target.value)
 
   return (
     <FormControl component="fieldset">
       <FormLabel component="legend">Waveform: {waveform}</FormLabel>
       <RadioGroup
-        defaultValue={Object.keys(radial)[0]}
+        defaultValue={waveform}
         aria-label="waveform"
         name="customized-radios"
         onChange={onChange}
@@ -67,7 +67,7 @@ function Picker() {
 }
 
 const App = () => {
-  const { waveform } = useContext(waveformContext)
+  const [ waveform ] = useContext(waveformContext)
   const [time, reset] = useAnimation({ deps:([waveform])})
   return (
     <>
