@@ -5,7 +5,7 @@ import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import * as d3 from 'd3'
 import * as React from 'react'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { radial } from './2dDataGenerators'
 import { GlobalStyles } from './GlobalStyles'
@@ -60,7 +60,8 @@ function Picker({values, onChange}) {
 }
 
 const App = () => {
-  const [ waveform, setWaveform ] = useContext(waveformContext)
+  // const [ waveform, setWaveform ] = useContext(waveformContext)
+  const [ waveform, setWaveform ] = useState(Object.keys(radial)[0])
   const [time, reset] = useAnimation({ deps:([waveform])})
   return (
     <>
