@@ -1,16 +1,23 @@
 import { createMuiTheme } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/styles'
-import React, { ReactNode } from 'react'
+import React from 'react'
 import { WaveFormProvider } from './waveformContext'
 import App from './App'
 
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    background: {
+      default: '#22222a',
+    },
+  },
+})
 
-const theme = createMuiTheme({ palette: { type: 'dark' } })
 const Providers = () => (
   <ThemeProvider theme={theme}>
-    <WaveFormProvider> 
-      <App /> 
-      </WaveFormProvider>
+    <WaveFormProvider>
+      <App />
+    </WaveFormProvider>
   </ThemeProvider>
 )
 
