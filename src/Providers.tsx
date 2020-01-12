@@ -1,4 +1,4 @@
-import { createMuiTheme } from '@material-ui/core'
+import { createMuiTheme, CssBaseline } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/styles'
 import React from 'react'
 import { WaveFormProvider } from './waveformContext'
@@ -15,6 +15,7 @@ const theme = createMuiTheme({
 
 const Providers = () => (
   <ThemeProvider theme={theme}>
+    <CssBaseline />
     <WaveFormProvider>
       <App />
     </WaveFormProvider>
