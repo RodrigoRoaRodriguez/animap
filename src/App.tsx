@@ -1,9 +1,4 @@
 import { Card, Grid, makeStyles } from '@material-ui/core'
-import FormControl from '@material-ui/core/FormControl'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormLabel from '@material-ui/core/FormLabel'
-import Radio from '@material-ui/core/Radio'
-import RadioGroup from '@material-ui/core/RadioGroup'
 import * as d3 from 'd3'
 import * as React from 'react'
 import { useState } from 'react'
@@ -11,6 +6,7 @@ import styled from 'styled-components'
 import { radial } from './2dDataGenerators'
 import Heatmap from './Heatmap'
 import { useAnimation } from './hooks/useAnimation'
+import { Picker } from './Picker'
 
 const Title = styled.h1`
   color: #eef;
@@ -33,25 +29,6 @@ const options = {
   // transform: addNoise(0.5),
   // periods: 2,
   size: 150,
-}
-
-// const datasets = [
-//   radial.triangle({...options, time: 0}),
-//   radial.sawtooth({...options, time: 0}),
-// ]
-
-function Picker({ values, onChange }) {
-  const forwardValue = event => onChange(event.target.value)
-  return (
-    <FormControl component="fieldset">
-      <FormLabel component="legend">Waveform: </FormLabel>
-      <RadioGroup defaultValue={values[0]} onChange={forwardValue}>
-        {values.map(value => (
-          <FormControlLabel value={value} control={<Radio />} label={value} />
-        ))}
-      </RadioGroup>
-    </FormControl>
-  )
 }
 
 const useStyles = makeStyles(theme => ({
