@@ -45,7 +45,7 @@ const App = () => {
   // const [ waveform, setWaveform ] = useContext(waveformContext)
   const [waveform, setWaveform] = useState(Object.keys(radial)[0])
   const [time, reset] = useAnimation({ deps: [waveform] })
-  const classes = useStyles()
+  const classes = useStyles({})
   return (
     <Grid
       container
@@ -64,13 +64,13 @@ const App = () => {
           </Card>
         </Grid>
         <Grid item>
-          <Heatmap
+          {/* <Heatmap
             onClick={reset}
             style={{ ...getSize(), borderRadius: 4 }}
             data={radial[waveform]({ ...options, time })}
             time={time}
             color={d3.interpolateHclLong('#012', '#ff6')}
-          />
+          /> */}
         </Grid>
       </Grid>
     </Grid>

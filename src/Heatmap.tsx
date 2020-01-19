@@ -42,14 +42,19 @@ type Args = {
 // TODO: nested array as data
 function getPixels({
   color = (id: any) => id,
-  data = [[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255], [0, 0, 0, 255]],
+  data = [
+    [255, 0, 0, 255],
+    [0, 255, 0, 255],
+    [0, 0, 255, 255],
+    [0, 0, 0, 255],
+  ],
   range: {
     max = Math.max(...(Array.isArray(data) ? data.flat() : data.data.flat())),
     min = Math.min(...(Array.isArray(data) ? data.flat() : data.data.flat())),
   } = {},
 }: Args = {}) {
   const colorize = toColorInterpolator(value =>
-    color(normalize(max, min)(value))
+    color(normalize(max, min)(value)),
   )
 
   if ((data as any).data) {
