@@ -3,21 +3,17 @@ import { radial } from './2dDataGenerators'
 
 export type ContextType<T> = [T, (_newValue: T) => void]
 
-const initialState: ContextType<string> = [
-  'uninitialized',
+const [initialState] = Object.keys(radial)
+
+export const waveformContext = React.createContext([
+  initialState,
   function setWaveform(_waveform: string): void {
     throw new Error('Provider not initialized')
   },
-]
-
-export const waveformContext = React.createContext(initialState)
+] as const)
 
 export const WaveFormProvider = ({ children }: { children: ReactNode }) => {
-  const setWaveform = waveform => setState([waveform, setWaveform])
-  const [value, setState] = useState([
-    Object.keys(radial)[0],
-    setWaveform
-  ] as ContextType<string>)
+  const value = useState(initialState)
 
-  return <waveformContext.Provider {...{ value, children }} />
+  return <waveformContext.Provider value={value} {...{ children }} />
 }
