@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 
 // Hook
 export function useAnimation({
-  easing = n => n,
+  easing = (n: number) => n,
   duration = 1000,
   delay = 0,
-  deps = [] as any[]
+  deps = [] as any[],
 } = {}) {
   const [elapsed, setTime] = useState(0)
   const [start, setStart] = useState(Date.now())
@@ -16,22 +16,23 @@ export function useAnimation({
 
   useEffect(
     animationLoop(start, duration, delay, setTime),
-    [start, duration, delay] // Re-run effect when duration or delay change
+    [start, duration, delay], // Re-run effect when duration or delay change
   )
 
   // Normalize, so time is on a scale from 0 to 1
   const normalizedTime = Math.min(1, elapsed / duration)
   // Return altered value based on our specified easing function
-  return [easing(normalizedTime), reset]
+  return [easing(normalizedTime), reset] as const
 }
 
 function animationLoop(
   start: number,
   duration: number,
   delay: number,
-  setTime
+  setTime: (time: number) => void,
 ) {
-  let animationFrame, stopTimer
+  let animationFrame: number
+  let stopTimer: number
   // Function to be executed on each animation frame
   function onFrame() {
     setTime(Date.now() - start)

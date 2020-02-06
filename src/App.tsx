@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const App = () => {
-  // const [ waveform, setWaveform ] = useContext(waveformContext)
+  // const [waveform, setWaveform] = React.useContext(waveformContext)
   const [waveform, setWaveform] = useState(Object.keys(radial)[0])
   const [time, reset] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
@@ -55,7 +55,7 @@ const App = () => {
       className={classes.root}
     >
       <Title>Heatmap {waveform}</Title>
-      <Sub>Keep working to see some magic happen 🌈✨</Sub>
+      <Sub> Keep working to see some magic happen 🌈✨</Sub>
       <h2>time: {Math.round(time * 100)}%</h2>
       <Grid container justify="center" spacing={2}>
         <Grid item>
