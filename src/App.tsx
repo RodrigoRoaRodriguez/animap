@@ -64,13 +64,13 @@ const App = () => {
           </Card>
         </Grid>
         <Grid item>
-          {/* <Heatmap
+          <Heatmap
             onClick={reset}
             style={{ ...getSize(), borderRadius: 4 }}
-            data={radial[waveform]({ ...options, time })}
+            data={radial[waveform as keyof typeof radial]({ ...options, time })}
             time={time}
             color={d3.interpolateHclLong('#012', '#ff6')}
-          /> */}
+          />
         </Grid>
       </Grid>
     </Grid>

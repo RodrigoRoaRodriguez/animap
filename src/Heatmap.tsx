@@ -1,19 +1,11 @@
 import * as React from 'react'
 import Texture from './Texture'
 import * as d3 from 'd3'
-import Button from '@material-ui/core/Button'
-import { useAnimation } from './hooks/useAnimation'
 import { normalize } from './utils'
 export type Color = [number, number, number, number] //?
 
-export interface HeatmapData {
-  width?: number
-  height?: number
-  data: number[]
-}
-
 interface ownProps {
-  data: number[][] | HeatmapData
+  data: number[][]
   range?: { max: number; min: number }
   color: (value: number) => string
   ref?: any
@@ -31,50 +23,38 @@ function toColorInterpolator(transferFn: (value: number) => string) {
 
 type Args = {
   color?: (id: any) => any
-  data?: number[][] | HeatmapData
+  data?: number[][] 
   range?: {
     max?: number
     min?: number
   }
 }
 
-// TODO: non-linear color scales
-// TODO: nested array as data
+const placeholderData = [
+  [255, 0, 0, 255],
+  [0, 255, 0, 255],
+  [0, 0, 255, 255],
+  [0, 0, 0, 255],
+];
+
 function getPixels({
   color = (id: any) => id,
-  data = [
-    [255, 0, 0, 255],
-    [0, 255, 0, 255],
-    [0, 0, 255, 255],
-    [0, 0, 0, 255],
-  ],
+  data = placeholderData,
   range: {
-    max = Math.max(...(Array.isArray(data) ? data.flat() : data.data.flat())),
-    min = Math.min(...(Array.isArray(data) ? data.flat() : data.data.flat())),
+    max = Math.max(...data.flat()),
+    min = Math.min(...data.flat()),
   } = {},
 }: Args = {}) {
   const colorize = toColorInterpolator(value =>
     color(normalize(max, min)(value)),
   )
 
-  if ((data as any).data) {
-    const { data: array = data, ...rest } = data as any
-    const pixels = {
-      ...rest,
-      data: array.flatMap(colorize),
-    }
-    return pixels
-  } else {
     return (data as any).map2d(colorize)
-  }
 }
 
 const Heatmap = ({ color, data, range, ...canvasProps }: props) => {
   return <Texture {...canvasProps} data={getPixels({ color, data, range })} />
 }
 
-// function areEqual(prevProps, nextProps) {
-//   return prevProps.time === nextProps.time
-// }
 
 export default Heatmap

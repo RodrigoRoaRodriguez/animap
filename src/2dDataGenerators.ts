@@ -67,4 +67,4 @@ export const radial = {
   sine: radialMap(sine),
   square: radialMap(square),
   triangle: radialMap(triangle),
-}
+} as const
