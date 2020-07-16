@@ -1,6 +1,7 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
-import { XYMatrix } from './utils'
+import { XYMatrix } from './utils/utils'
 import { Waveform, gauss, triangle, sawtooth, sine, square } from './Waveform'
+import { make2d, map2d } from './utils/array'
 
 /**
  * Horizontally maps a Waveform function over a square matrix
@@ -30,7 +31,7 @@ type Coords = {
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const matrixMap = (valueFn: (xy: Coords, size: number) => number) => (
+const matrixMap2d = (valueFn: (xy: Coords, size: number) => number) => (
   waveform: Waveform
 ) => ({
   size = 50,
@@ -38,7 +39,9 @@ const matrixMap = (valueFn: (xy: Coords, size: number) => number) => (
   transform = (value = 0) => value,
   time = 0,
 } = {}) =>
-  new XYMatrix({ size }).map2d((_, coords) =>
+  map2d(
+    make2d(size), 
+    (_, coords) =>
     transform(
       waveform({ periods, size, value: time * size + valueFn(coords, size) })
     )
@@ -57,9 +60,8 @@ const byDistance = ({ x, y }: Coords, size = 1) =>
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const radialMap = matrixMap(byDistance)
+const radialMap = matrixMap2d(byDistance)
 
-/* Generators */
 
 export const radial = {
   // gauss: radialMap(gauss),

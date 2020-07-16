@@ -1,8 +1,9 @@
 import * as React from 'react'
 import Texture from './Texture'
 import * as d3 from 'd3'
-import { normalize } from './utils'
-export type Color = [number, number, number, number] //?
+import { normalize } from './utils/utils'
+import { map2d } from './utils/array'
+import { Color } from './types/Color'
 
 interface ownProps {
   data: number[][]
@@ -38,7 +39,7 @@ const placeholderData = [
 ];
 
 function getPixels({
-  color = (id: any) => id,
+  color = (id: number) => id,
   data = placeholderData,
   range: {
     max = Math.max(...data.flat()),
@@ -49,7 +50,7 @@ function getPixels({
     color(normalize(max, min)(value)),
   )
 
-    return (data as any).map2d(colorize)
+  return map2d<number, number[]>(data, colorize)
 }
 
 const Heatmap = ({ color, data, range, ...canvasProps }: props) => {

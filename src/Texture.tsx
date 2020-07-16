@@ -24,7 +24,7 @@ const vert = `
   }`
 
 interface TextureProps {
-  data: number[]
+  data: number[][][]
 }
 export type Props = TextureProps & React.HTMLAttributes<HTMLCanvasElement>
 
