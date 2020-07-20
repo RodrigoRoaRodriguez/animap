@@ -24,7 +24,7 @@ const vert = `
   }`
 
 interface TextureProps {
-  data: number[][][]
+  pixels: number[][][]
 }
 export type Props = TextureProps & React.HTMLAttributes<HTMLCanvasElement>
 
@@ -43,7 +43,7 @@ const Texture = (props: Props) => {
         attributes,
         uniforms: {
           color: [1, 0, 0, 1],
-          texture: regl.current.texture(props.data),
+          texture: regl.current.texture(props.pixels),
         },
         count: attributes.position.length,
       })()
