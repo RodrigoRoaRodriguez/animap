@@ -1,4 +1,4 @@
-import { Card, Grid, makeStyles } from '@material-ui/core'
+import { Card, Grid, makeStyles, Slider } from '@material-ui/core'
 import * as d3 from 'd3'
 import * as React from 'react'
 import { useState } from 'react'
@@ -7,6 +7,9 @@ import { radial } from './2dDataGenerators'
 import Heatmap from './Heatmap'
 import { useAnimation } from './hooks/useAnimation'
 import { Picker } from './Picker'
+import DiscreteSlider from './components/DiscreteSlider'
+
+
 
 declare module "d3" {
   export function interpolateTurbo(t: number): string;
@@ -44,6 +47,9 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     textAlign: 'center',
   },
+  slider: {
+    width: getSize().width
+  }
 }))
 
 const colorScales = {
@@ -96,6 +102,18 @@ const App = () => {
           </Card>  
         </Grid>
       </Grid>
+      <Slider
+        className={classes.slider}
+        defaultValue={0}
+        getAriaValueText={()=> 'zero'}
+        aria-labelledby="discrete-slider"
+        valueLabelDisplay="auto"
+        step={0.01}
+        marks
+        min={0}
+        max={1}
+        value={time}
+      />
     </Grid>
   )
 }

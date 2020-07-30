@@ -42,6 +42,7 @@ function animationLoop(
   function loop() {
     animationFrame = requestAnimationFrame(onFrame)
   }
+  
   function onStart() {
     // Set a timeout to stop things when duration time elapses
     stopTimer = setTimeout(() => {

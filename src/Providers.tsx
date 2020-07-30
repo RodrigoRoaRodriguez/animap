@@ -3,10 +3,13 @@ import { ThemeProvider } from '@material-ui/styles'
 import React from 'react'
 import { WaveFormProvider } from './waveformContext'
 import App from './App'
+import red from '@material-ui/core/colors/red';
 
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
+    primary: red,
+    secondary: red,
     background: {
       default: '#22222a',
     },
