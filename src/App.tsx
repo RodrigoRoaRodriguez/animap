@@ -8,6 +8,11 @@ import Heatmap from './Heatmap'
 import { useAnimation } from './hooks/useAnimation'
 import { Picker } from './Picker'
 
+declare module "d3" {
+  export function interpolateTurbo(t: number): string;
+  export function interpolateCividis(t: number): string;
+}
+
 const Title = styled.h1`
   color: #eef;
   font-weight: 400;
@@ -41,9 +46,22 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const colorScales = {
+  "Rodrigo's": d3.interpolateHclLong('#012', '#ff6'),
+  "Turbo": d3.interpolateTurbo, 
+  "Inferno": d3.interpolateInferno,
+  "Cividis": d3.interpolateCividis,
+  "Viridis": d3.interpolateViridis,
+  "Warm": d3.interpolateWarm,
+  "Cool": d3.interpolateCool,
+  "CubeHelix": d3.interpolateCubehelixDefault,
+}
+
 const App = () => {
   // const [waveform, setWaveform] = React.useContext(waveformContext)
   const [waveform, setWaveform] = useState(Object.keys(radial)[0])
+  const [colorScale, setColorScale] = useState(Object.keys(colorScales)[0])
+  
   const [time, reset] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
   return (
@@ -55,22 +73,27 @@ const App = () => {
       className={classes.root}
     >
       <Title>Heatmap {waveform}</Title>
-      <Sub> Keep working to see some magic happen 🌈✨</Sub>
+      <Sub>Keep working to see some magic happen 🌈✨</Sub>
       <h2>time: {Math.round(time * 100)}%</h2>
       <Grid container justify="center" spacing={2}>
-        <Grid item>
+      <Grid container item alignContent="space-between" spacing={2} sm={12} md={2}>
           <Card className={classes.card}>
-            <Picker values={Object.keys(radial)} onChange={setWaveform} />
+            <Picker title="Waveform: " values={Object.keys(radial)} onChange={setWaveform} />
           </Card>
-        </Grid>
+      </Grid>
         <Grid item>
           <Heatmap
             onClick={reset}
             style={{ ...getSize(), borderRadius: 4 }}
             data={radial[waveform as keyof typeof radial]({ ...options, time })}
             time={time}
-            color={d3.interpolateHclLong('#012', '#ff6')}
+            color={colorScales[colorScale as keyof typeof colorScales]}
           />
+        </Grid>
+        <Grid item>
+        <Card className={classes.card}>
+            <Picker title="Set color scheme: " values={Object.keys(colorScales)} onChange={setColorScale} />
+          </Card>  
         </Grid>
       </Grid>
     </Grid>

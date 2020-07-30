@@ -27,7 +27,7 @@ export type Args = {
 }
 
 export function useValueToColor({
-  color = (id: number) => id,
+  color = d3.interpolateHclLong('#012', '#ff6'),
   data = placeholderData,
   range: {
     max = Math.max(...data.flat()),

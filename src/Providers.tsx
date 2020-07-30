@@ -11,6 +11,15 @@ const theme = createMuiTheme({
       default: '#22222a',
     },
   },
+  overrides: {
+    MuiFormLabel: { // Name of the component ⚛️ / style sheet
+      root: { // Name of the rule
+        "&$focused": { // increase the specificity for the pseudo class
+          color: "#ffa"
+        }
+      }
+    }
+  }
 })
 
 const Providers = () => (

@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react'
+import React, { useState, FC } from 'react'
 import { radial } from './2dDataGenerators'
 
 export type ContextType<T> = [T, (_newValue: T) => void]
@@ -12,8 +12,6 @@ export const waveformContext = React.createContext([
   },
 ] as const)
 
-export const WaveFormProvider = ({ children }: { children: ReactNode }) => {
-  const value = useState(initialState)
-
-  return <waveformContext.Provider value={value} {...{ children }} />
+export const WaveFormProvider: FC = ({ children }) => {
+  return <waveformContext.Provider value={useState(initialState)} {...{ children }} />
 }
