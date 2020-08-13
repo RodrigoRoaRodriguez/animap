@@ -7,8 +7,6 @@ import { radial } from './2dDataGenerators'
 import Heatmap from './Heatmap'
 import { useAnimation } from './hooks/useAnimation'
 import { Picker } from './Picker'
-import DiscreteSlider from './components/DiscreteSlider'
-
 
 
 declare module "d3" {
