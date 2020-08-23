@@ -1,7 +1,7 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
 import { XYMatrix } from './utils/utils'
 import { Waveform, gauss, triangle, sawtooth, sine, square } from './Waveform'
-import { make2d, map2d } from './utils/array'
+import { make2d, map2d, map3d, make3d } from './utils/array'
 
 /**
  * Horizontally maps a Waveform function over a square matrix
@@ -41,6 +41,26 @@ const matrixMap2d = (valueFn: (xy: Coords, size: number) => number) => (
 } = {}) =>
   map2d(
     make2d(size), 
+    (_, coords) =>
+    transform(
+      waveform({ periods, size, value: time * size + valueFn(coords, size) })
+    )
+  )
+
+/**
+ * Radially maps a Waveform function over a square matrix
+ * @param waveform function mapped over the matrix to describe the graph shape
+ */
+const matrixMap3d = (valueFn: (xy: Coords, size: number) => number) => (
+  waveform: Waveform
+) => ({
+  size = 50,
+  periods = 2,
+  transform = (value = 0) => value,
+  time = 0,
+} = {}) =>
+  map3d(
+    make3d(size), 
     (_, coords) =>
     transform(
       waveform({ periods, size, value: time * size + valueFn(coords, size) })

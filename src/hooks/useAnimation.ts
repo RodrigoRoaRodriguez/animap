@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 
 // Hook
 export function useAnimation({
-  easing = (n: number) => n,
   duration = 1000,
   delay = 0,
   deps = [] as any[],
@@ -21,8 +20,11 @@ export function useAnimation({
 
   // Normalize, so time is on a scale from 0 to 1
   const normalizedTime = Math.min(1, elapsed / duration)
+
+  const setTimeTo = (percentage: number) =>
+    setStart(Date.now() - duration * percentage)
   // Return altered value based on our specified easing function
-  return [easing(normalizedTime), reset] as const
+  return [normalizedTime, reset, setTimeTo] as const
 }
 
 function animationLoop(
@@ -42,7 +44,7 @@ function animationLoop(
   function loop() {
     animationFrame = requestAnimationFrame(onFrame)
   }
-  
+
   function onStart() {
     // Set a timeout to stop things when duration time elapses
     stopTimer = setTimeout(() => {
@@ -55,7 +57,7 @@ function animationLoop(
   return () => {
     // Start after specified delay (defaults to 0)
     const timerDelay = setTimeout(onStart, delay)
-    // Clean things up
+    // Cleanup: remove listeners when the components is unmounted.
     return () => {
       clearTimeout(stopTimer)
       clearTimeout(timerDelay)

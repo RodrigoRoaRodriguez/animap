@@ -8,10 +8,9 @@ import Heatmap from './Heatmap'
 import { useAnimation } from './hooks/useAnimation'
 import { Picker } from './Picker'
 
-
-declare module "d3" {
-  export function interpolateTurbo(t: number): string;
-  export function interpolateCividis(t: number): string;
+declare module 'd3' {
+  export function interpolateTurbo(t: number): string
+  export function interpolateCividis(t: number): string
 }
 
 const Title = styled.h1`
@@ -37,7 +36,7 @@ const options = {
   size: 150,
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -46,28 +45,33 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
   slider: {
-    width: getSize().width
-  }
+    width: getSize().width,
+  },
 }))
 
 const colorScales = {
   "Rodrigo's": d3.interpolateHclLong('#012', '#ff6'),
-  "Turbo": d3.interpolateTurbo, 
-  "Inferno": d3.interpolateInferno,
-  "Cividis": d3.interpolateCividis,
-  "Viridis": d3.interpolateViridis,
-  "Warm": d3.interpolateWarm,
-  "Cool": d3.interpolateCool,
-  "CubeHelix": d3.interpolateCubehelixDefault,
+  Turbo: d3.interpolateTurbo,
+  Inferno: d3.interpolateInferno,
+  Cividis: d3.interpolateCividis,
+  Viridis: d3.interpolateViridis,
+  Warm: d3.interpolateWarm,
+  Cool: d3.interpolateCool,
+  CubeHelix: d3.interpolateCubehelixDefault,
 }
 
 const App = () => {
   // const [waveform, setWaveform] = React.useContext(waveformContext)
   const [waveform, setWaveform] = useState(Object.keys(radial)[0])
   const [colorScale, setColorScale] = useState(Object.keys(colorScales)[0])
-  
-  const [time, reset] = useAnimation({ deps: [waveform] })
+
+  const [time, reset, setTime] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
+  const [sliderValue, setSliderValue] = useState(0)
+  React.useEffect(() => {
+    setSliderValue(time)
+  }, [time])
+
   return (
     <Grid
       container
@@ -80,11 +84,22 @@ const App = () => {
       <Sub>Keep working to see some magic happen 🌈✨</Sub>
       <h2>time: {Math.round(time * 100)}%</h2>
       <Grid container justify="center" spacing={2}>
-      <Grid container item alignContent="space-between" spacing={2} sm={12} md={2}>
+        <Grid
+          container
+          item
+          alignContent="space-between"
+          spacing={2}
+          sm={12}
+          md={2}
+        >
           <Card className={classes.card}>
-            <Picker title="Waveform: " values={Object.keys(radial)} onChange={setWaveform} />
+            <Picker
+              title="Waveform: "
+              values={Object.keys(radial)}
+              onChange={setWaveform}
+            />
           </Card>
-      </Grid>
+        </Grid>
         <Grid item>
           <Heatmap
             onClick={reset}
@@ -95,23 +110,28 @@ const App = () => {
           />
         </Grid>
         <Grid item>
-        <Card className={classes.card}>
-            <Picker title="Set color scheme: " values={Object.keys(colorScales)} onChange={setColorScale} />
-          </Card>  
+          <Card className={classes.card}>
+            <Picker
+              title="Set color scheme: "
+              values={Object.keys(colorScales)}
+              onChange={setColorScale}
+            />
+          </Card>
         </Grid>
       </Grid>
       <Slider
         className={classes.slider}
         defaultValue={0}
-        getAriaValueText={()=> 'zero'}
-        aria-labelledby="discrete-slider"
+        getAriaValueText={() => 'zero'}
         valueLabelDisplay="auto"
         step={0.01}
-        marks
         min={0}
         max={1}
-        value={time}
+        value={sliderValue}
+        onChange={(_, value) => setSliderValue(value as number)}
+        onChangeCommitted={(_, value) => setTime(value as number)}
       />
+      <button onClick={() => setTime(0)}>Reset</button>
     </Grid>
   )
 }
