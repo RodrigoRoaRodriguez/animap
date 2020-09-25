@@ -1,7 +1,7 @@
 import { Card, Grid, makeStyles, Slider } from '@material-ui/core'
 import * as d3 from 'd3'
 import * as React from 'react'
-import { useState } from 'react'
+import { useReducer, useState } from 'react'
 import styled from 'styled-components'
 import { radial } from './2dDataGenerators'
 import Heatmap from './Heatmap'
@@ -60,14 +60,35 @@ const colorScales = {
   CubeHelix: d3.interpolateCubehelixDefault,
 }
 
+function useMany<T>(initialState: T) {
+  const [state, setState] = useReducer(
+    ((state, changes) => Object.assign({}, state, changes)) as (
+      state: T,
+      changes: Partial<T>,
+    ) => T,
+    initialState,
+  )
+  return { state, setState }
+}
+
+const initialState = {
+  waveform: useState(Object.keys(radial)[0]),
+  colorScale: useState(Object.keys(colorScales)[0]),
+  sliderValue: useState(0),
+}
+
 const App = () => {
-  // const [waveform, setWaveform] = React.useContext(waveformContext)
-  const [waveform, setWaveform] = useState(Object.keys(radial)[0])
-  const [colorScale, setColorScale] = useState(Object.keys(colorScales)[0])
+  const {
+    state: { waveform, colorScale, sliderValue },
+    setState,
+  } = useMany(initialState)
+  // const [waveform, setWaveform] = useState(Object.keys(radial)[0])
+  // const [colorScale, setColorScale] = useState(Object.keys(colorScales)[0])
+  // const [sliderValue, setSliderValue] = useState(0)
 
   const [time, reset, setTime] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
-  const [sliderValue, setSliderValue] = useState(0)
+
   React.useEffect(() => {
     setSliderValue(time)
   }, [time])
@@ -96,7 +117,7 @@ const App = () => {
             <Picker
               title="Waveform: "
               values={Object.keys(radial)}
-              onChange={setWaveform}
+              onChange={() => setState({ waveform })}
             />
           </Card>
         </Grid>

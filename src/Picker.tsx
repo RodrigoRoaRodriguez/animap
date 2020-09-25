@@ -1,22 +1,30 @@
-import * as React from 'react'
+import React, { useCallback } from 'react'
 import FormControl from '@material-ui/core/FormControl'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormLabel from '@material-ui/core/FormLabel'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 interface Props {
-  values: string[]
-  title: string,
   onChange: (value: string) => void
+  title: string
+  values: string[]
+  defaultValue?: string
 }
 
-export function Picker({ values, title, onChange }: Props) {
-  const forwardValue = (_: unknown, value: string) => onChange(value)
+export function Picker({
+  onChange,
+  title,
+  values,
+  defaultValue = values[0],
+}: Props) {
+  const forwardValue = useCallback(({}, value: string) => onChange(value), [
+    onChange,
+  ])
   return (
     <FormControl component="fieldset">
       <FormLabel component="legend">{title}</FormLabel>
-      <RadioGroup defaultValue={values[0]} onChange={forwardValue}>
-        {values.map(value => (
+      <RadioGroup defaultValue={defaultValue} onChange={forwardValue}>
+        {values.map((value) => (
           <FormControlLabel
             key={value}
             value={value}
