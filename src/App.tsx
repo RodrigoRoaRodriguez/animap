@@ -1,4 +1,4 @@
-import { Card, Grid, makeStyles, Slider } from '@material-ui/core'
+import { Button, Card, Grid, makeStyles, Slider } from '@material-ui/core'
 import * as d3 from 'd3'
 import * as React from 'react'
 import { useReducer, useState } from 'react'
@@ -60,38 +60,47 @@ const colorScales = {
   CubeHelix: d3.interpolateCubehelixDefault,
 }
 
-function useMany<T>(initialState: T) {
+function useDux<S, A extends { [key: string]: (state: S) => Function }>(
+  initialState: S,
+  acts: A,
+) {
   const [state, setState] = useReducer(
     ((state, changes) => Object.assign({}, state, changes)) as (
-      state: T,
-      changes: Partial<T>,
-    ) => T,
+      state: S,
+      changes: Partial<S>,
+    ) => S,
     initialState,
   )
-  return { state, setState }
+
+  const dux = {} as { [K in keyof A]: ReturnType<A[K]> }
+  for (const [name, action] of Object.entries(acts)) {
+    dux[name as keyof A] = action(state) as any
+  }
+
+  return { dux, state, setState }
 }
 
 const initialState = {
-  waveform: useState(Object.keys(radial)[0]),
-  colorScale: useState(Object.keys(colorScales)[0]),
-  sliderValue: useState(0),
+  waveform: Object.keys(radial)[0],
+  colorScale: Object.keys(colorScales)[0],
+  sliderValue: 0,
 }
 
 const App = () => {
   const {
     state: { waveform, colorScale, sliderValue },
     setState,
-  } = useMany(initialState)
-  // const [waveform, setWaveform] = useState(Object.keys(radial)[0])
-  // const [colorScale, setColorScale] = useState(Object.keys(colorScales)[0])
-  // const [sliderValue, setSliderValue] = useState(0)
+    dux,
+  } = useDux(initialState, {
+    printWaveForm: (state) => () => alert(state.waveform),
+  })
 
   const [time, reset, setTime] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
 
   React.useEffect(() => {
-    setSliderValue(time)
-  }, [time])
+    setState({ sliderValue: time })
+  }, [time, setState])
 
   return (
     <Grid
@@ -117,7 +126,7 @@ const App = () => {
             <Picker
               title="Waveform: "
               values={Object.keys(radial)}
-              onChange={() => setState({ waveform })}
+              onChange={(waveform) => setState({ waveform })}
             />
           </Card>
         </Grid>
@@ -135,7 +144,7 @@ const App = () => {
             <Picker
               title="Set color scheme: "
               values={Object.keys(colorScales)}
-              onChange={setColorScale}
+              onChange={(colorScale) => setState({ colorScale })}
             />
           </Card>
         </Grid>
@@ -149,10 +158,11 @@ const App = () => {
         min={0}
         max={1}
         value={sliderValue}
-        onChange={(_, value) => setSliderValue(value as number)}
+        onChange={(_, value) => setState({ sliderValue: value as number })}
         onChangeCommitted={(_, value) => setTime(value as number)}
       />
-      <button onClick={() => setTime(0)}>Reset</button>
+      <Button onClick={() => setTime(0)}>Reset</Button>
+      <Button onClick={dux.printWaveForm}>Print waveform</Button>
     </Grid>
   )
 }
