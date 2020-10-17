@@ -1,12 +1,13 @@
 import { Button, Card, Grid, makeStyles, Slider } from '@material-ui/core'
 import * as d3 from 'd3'
 import * as React from 'react'
-import { useReducer, useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { radial } from './2dDataGenerators'
 import Heatmap from './Heatmap'
 import { useAnimation } from './hooks/useAnimation'
 import { Picker } from './Picker'
+import { useDux } from './useDux'
 
 declare module 'd3' {
   export function interpolateTurbo(t: number): string
@@ -58,26 +59,6 @@ const colorScales = {
   Warm: d3.interpolateWarm,
   Cool: d3.interpolateCool,
   CubeHelix: d3.interpolateCubehelixDefault,
-}
-
-function useDux<S, A extends { [key: string]: (state: S) => Function }>(
-  initialState: S,
-  acts: A,
-) {
-  const [state, setState] = useReducer(
-    ((state, changes) => Object.assign({}, state, changes)) as (
-      state: S,
-      changes: Partial<S>,
-    ) => S,
-    initialState,
-  )
-
-  const dux = {} as { [K in keyof A]: ReturnType<A[K]> }
-  for (const [name, action] of Object.entries(acts)) {
-    dux[name as keyof A] = action(state) as any
-  }
-
-  return { dux, state, setState }
 }
 
 const initialState = {
