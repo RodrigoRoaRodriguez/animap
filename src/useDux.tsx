@@ -2,7 +2,17 @@ import { useReducer } from 'react'
 
 export function useDux<
   S,
-  A extends { [key: string]: (state: S) => ReturnType<A[keyof A]> }
+  A extends {
+    [key: string]: ({
+      state,
+      setState,
+      act,
+    }: {
+      state: S
+      setState: React.Dispatch<Partial<S>>
+      act: { [K in keyof A]: ReturnType<A[K]> }
+    }) => ReturnType<A[keyof A]>
+  }
 >(initialState: S, acts: A) {
   const [state, setState] = useReducer(
     ((state, changes) => Object.assign({}, state, changes)) as (
@@ -12,10 +22,10 @@ export function useDux<
     initialState,
   )
 
-  const dux = {} as { [K in keyof A]: ReturnType<A[K]> }
+  const act = {} as { [K in keyof A]: ReturnType<A[K]> }
   for (const [name, action] of Object.entries(acts)) {
-    dux[name as keyof A] = action(state)
+    act[name as keyof A] = action({ act, setState, state })
   }
 
-  return { dux, state, setState }
+  return { act, setState, state }
 }
