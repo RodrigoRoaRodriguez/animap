@@ -14,15 +14,21 @@ export function useAnimation({
   delay = 0,
   deps = [] as any[],
 } = {}) {
-  const { state, setState } = useDux(initialState)
-  const { start, elapsed } = state
+  const dux = useDux(initialState, {
+    nextFrame: ({ state: { start }, setState }) => () =>
+      setState({ elapsed: Date.now() - start }),
+  })
+  const {
+    state: { start, elapsed },
+    setState,
+  } = dux
 
   const reset = () => setState({ start: Date.now() })
   // Reset when dependencies change
   useEffect(reset, deps)
 
   useEffect(
-    animationLoop(state, setState),
+    animationLoop(dux),
     [start, duration, delay], // Re-run effect when duration or delay change
   )
 
@@ -35,15 +41,20 @@ export function useAnimation({
   return [normalizedTime, reset, setTimeTo] as const
 }
 
-function animationLoop(
-  { start, duration, delay, elapsed }: typeof initialState,
-  setState: React.Dispatch<Partial<typeof initialState>>,
-) {
+function animationLoop({
+  state: { start, duration, delay },
+  setState,
+  act: { nextFrame },
+}: {
+  state: typeof initialState
+  setState: React.Dispatch<Partial<typeof initialState>>
+  act: { nextFrame: () => void }
+}) {
   let animationFrame: number
   let stopTimer: number
   // Function to be executed on each animation frame
   function onFrame() {
-    setState({ elapsed: Date.now() - start })
+    nextFrame()
     loop()
   }
 
@@ -55,7 +66,7 @@ function animationLoop(
     // Set a timeout to stop things when duration time elapses
     stopTimer = setTimeout(() => {
       cancelAnimationFrame(animationFrame)
-      setState({ elapsed: Date.now() - start })
+      nextFrame()
     }, duration)
     loop()
   }
