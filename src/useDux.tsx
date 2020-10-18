@@ -13,7 +13,7 @@ export function useDux<
       act: { [K in keyof A]: ReturnType<A[K]> }
     }) => ReturnType<A[keyof A]>
   }
->(initialState: S, acts: A) {
+>(initialState: S, acts: A = {} as A) {
   const [state, setState] = useReducer(
     ((state, changes) => Object.assign({}, state, changes)) as (
       state: S,
