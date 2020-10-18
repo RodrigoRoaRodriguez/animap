@@ -15,7 +15,7 @@ export function useAnimation({
   deps = [] as any[],
 } = {}) {
   const dux = useDux(initialState, {
-    nextFrame: ({ state: { start }, setState }) => () =>
+    renderFrame: ({ state: { start }, setState }) => () =>
       setState({ elapsed: Date.now() - start }),
   })
   const {
@@ -44,31 +44,27 @@ export function useAnimation({
 function animationLoop({
   state: { start, duration, delay },
   setState,
-  act: { nextFrame },
+  act: { renderFrame },
 }: {
   state: typeof initialState
   setState: React.Dispatch<Partial<typeof initialState>>
-  act: { nextFrame: () => void }
+  act: { renderFrame: () => void }
 }) {
   let animationFrame: number
   let stopTimer: number
   // Function to be executed on each animation frame
-  function onFrame() {
-    nextFrame()
-    loop()
-  }
-
-  function loop() {
-    animationFrame = requestAnimationFrame(onFrame)
+  function animationLoop() {
+    renderFrame()
+    animationFrame = requestAnimationFrame(animationLoop)
   }
 
   function onStart() {
     // Set a timeout to stop things when duration time elapses
     stopTimer = setTimeout(() => {
       cancelAnimationFrame(animationFrame)
-      nextFrame()
+      // renderFrame()
     }, duration)
-    loop()
+    animationLoop()
   }
 
   return () => {
