@@ -1,5 +1,5 @@
-import { Dispatch, useEffect } from 'react'
-import { typeActs, useDux } from '../useDux'
+import { useEffect } from 'react'
+import { Dux, typeActs, useDux } from '../useDux'
 // import { Acts, useDux } from '../useDux'
 
 export const initialState = {
@@ -49,11 +49,7 @@ function animationLoop({
   state: { start, duration, delay },
   setState,
   act: { renderFrame },
-}: {
-  state: typeof initialState
-  setState: React.Dispatch<Partial<typeof initialState>>
-  act: { renderFrame: () => void }
-}) {
+}: Dux<typeof initialState, typeof acts>) {
   let animationFrame: number
   let stopTimer: number
   // Function to be executed on each animation frame
