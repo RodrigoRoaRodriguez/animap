@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
-import { useDux } from '../useDux'
+import { Dispatch, useEffect } from 'react'
+import { typeActs, useDux } from '../useDux'
+// import { Acts, useDux } from '../useDux'
 
 export const initialState = {
   elapsed: 0,
@@ -8,16 +9,19 @@ export const initialState = {
   delay: 0,
 }
 
+const acts = typeActs(initialState, {
+  renderFrame: ({ state: { start }, setState }) => () =>
+    setState({ elapsed: Date.now() - start }),
+})
+
 // Hook
 export function useAnimation({
   duration = 1000,
   delay = 0,
   deps = [] as any[],
 } = {}) {
-  const dux = useDux(initialState, {
-    renderFrame: ({ state: { start }, setState }) => () =>
-      setState({ elapsed: Date.now() - start }),
-  })
+  const dux = useDux(initialState, acts)
+
   const {
     state: { start, elapsed },
     setState,

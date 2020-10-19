@@ -26,7 +26,7 @@ export function useDux<
       act: { [K in keyof A]: ReturnType<A[K]> }
     }) => ReturnType<A[keyof A]>
   }
->(initialState: S, acts: A = {} as A) {
+>(initialState: S, acts: A = {} as A): Dux<S, A> {
   const [state, setState] = useReducer(
     ((state, changes) => Object.assign({}, state, changes)) as (
       state: S,
@@ -55,8 +55,8 @@ export type SetState<S> = Dispatch<Partial<S>>
  * @arg S state, usually `typeof initialState`.
  * @arg A acts, an object containing stateful interactions.s
  */
-export type Dux<S, A extends Acts<S, A>> = {
-  act: Act<S, A>
+export type Dux<S, A extends Acts<S, A> = any> = {
+  act: Act<A>
   setState: Dispatch<Partial<S>>
   state: S
 }
@@ -65,15 +65,17 @@ export type Dux<S, A extends Acts<S, A>> = {
  * Utility type to represent `act` object returned by the useDux hook
  * @arg A state, usually `typeof initialState`.
  */
-export type Act<S, A extends Acts<S, A>> = { [K in keyof A]: ReturnType<A[K]> }
+export type Act<A extends { [key: string]: (...args: any) => any }> = {
+  [K in keyof A]: ReturnType<A[K]>
+}
 
 /**
  * Utility type to represent the `acts` argument of useDux. It is an object where
  * every value is a function that consumes state. Acts can be use for all sorts of
  * things, e.g: getters, setters, derived state, reactions, etc.
  */
-export type Acts<S, A extends Acts<S, A>> = {
-  [key: string]: ({
+export type Acts<S, A extends Acts<S, A> = any> = {
+  [key in keyof A]: ({
     state,
     setState,
     act,
@@ -82,4 +84,33 @@ export type Acts<S, A extends Acts<S, A>> = {
     setState: Dispatch<Partial<S>>
     act: { [K in keyof A]: ReturnType<A[K]> }
   }) => ReturnType<A[keyof A]>
+}
+
+/**
+ * Provides types to represent the `act` property of the return type of useDux.
+ * Typescript does not yet exposed inferred types. Hence a type annotation for acts is
+ * impossible. Self-referring generics could circumvent this limitation except there
+ * is a check that disallows them. Nonetheless, it is possible to create circumvent
+ * then self-reference check by referring to the types of the arguments of a function
+ * rather rather than the generics themselves.
+ *
+ * @param initialState initial values for all the state variables
+ * @param acts object of functions that consume state. I.e. getters, setters,
+ * derived state, reactions, etc. N.B. do not confuse with the `act` property.
+ */
+export function typeActs<
+  S,
+  A extends {
+    [key: string]: ({
+      state,
+      setState,
+      act,
+    }: {
+      state: S
+      setState: Dispatch<Partial<S>>
+      act: { [K in keyof A]: ReturnType<A[K]> }
+    }) => ReturnType<A[keyof A]>
+  }
+>(_initialState: S, acts: A = {} as A): A {
+  return acts
 }
