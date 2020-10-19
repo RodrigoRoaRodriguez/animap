@@ -53,7 +53,8 @@ export type SetState<S> = Dispatch<Partial<S>>
  * Utility type to represent the whole return type of the useDux hook which is the
  * same as the argument for dux acts.
  * @arg S state, usually `typeof initialState`.
- * @arg A acts, an object containing stateful interactions.s
+ * @arg A acts, an object of predefined containing stateful interactions that
+ * consume state, usually `typeof acts`.
  */
 export type Dux<S, A extends Acts<S, A> = any> = {
   act: Act<A>
@@ -63,13 +64,16 @@ export type Dux<S, A extends Acts<S, A> = any> = {
 
 /**
  * Utility type to represent `act` object returned by the useDux hook
- * @arg A state, usually `typeof initialState`.
+ * @arg A acts,  usually `typeof acts`.
  */
 export type Act<A extends { [key: string]: (...args: any) => any }> = {
   [K in keyof A]: ReturnType<A[K]>
 }
 
 /**
+ * WARNING! DO NOT USE Acts TO TYPE ACTS. IT WILL NOT WORK.
+ * This is due to a Typescript limitation in spite of the type being correct.
+ *
  * Utility type to represent the `acts` argument of useDux. It is an object where
  * every value is a function that consumes state. Acts can be use for all sorts of
  * things, e.g: getters, setters, derived state, reactions, etc.
