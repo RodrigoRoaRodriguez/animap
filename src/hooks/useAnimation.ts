@@ -7,6 +7,7 @@ export const initialState = {
   start: Date.now(),
   duration: 1000,
   delay: 0,
+  playing: true,
 }
 
 const acts = typeActs(initialState, {
@@ -20,7 +21,7 @@ export function useAnimation({
   delay = 0,
   deps = [] as any[],
 } = {}) {
-  const dux = useDux(initialState, acts)
+  const dux = useDux({ ...initialState, duration, delay }, acts)
 
   const {
     state: { start, elapsed },
@@ -46,7 +47,7 @@ export function useAnimation({
 }
 
 function animationLoop({
-  state: { start, duration, delay },
+  state: { elapsed, duration, delay, playing },
   setState,
   act: { renderFrame },
 }: Dux<typeof initialState, typeof acts>) {
@@ -68,8 +69,9 @@ function animationLoop({
   }
 
   return () => {
+    let timerDelay: number
     // Start after specified delay (defaults to 0)
-    const timerDelay = setTimeout(onStart, delay)
+    if (playing) timerDelay = setTimeout(onStart, delay)
     // Cleanup: remove listeners when the components is unmounted.
     return () => {
       clearTimeout(stopTimer)
