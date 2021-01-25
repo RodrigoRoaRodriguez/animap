@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Dux, typeActs, useDux } from '../useDux'
+import { typeActs, useDux } from '../useDux'
 // import { Acts, useDux } from '../useDux'
 
 export const initialState = {
@@ -10,10 +10,9 @@ export const initialState = {
   playing: true,
 }
 
-const acts = typeActs(initialState, {
-  renderFrame: ({ state: { start }, setState }) => () =>
-    setState({ elapsed: Date.now() - start }),
-})
+const acts = typeActs(initialState, ({ start }, setState) => ({
+  renderFrame: () => setState({ elapsed: Date.now() - start }),
+}))
 
 // Hook
 export function useAnimation({
@@ -50,7 +49,8 @@ function animationLoop({
   state: { elapsed, duration, delay, playing },
   setState,
   act: { renderFrame },
-}: Dux<typeof initialState, typeof acts>) {
+}: any) {
+  // }: Dux<typeof initialState, typeof acts>) {
   let animationFrame: number
   let stopTimer: number
   // Function to be executed on each animation frame

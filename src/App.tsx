@@ -72,9 +72,9 @@ const App = () => {
     state: { waveform, colorScale, sliderValue },
     setState,
     act,
-  } = useDux(initialState, {
-    printWaveForm: ({ state }) => () => alert(state.waveform),
-  })
+  } = useDux(initialState, (state) => ({
+    printWaveForm: () => alert(state.waveform),
+  }))
 
   const [time, reset, setTime] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
@@ -142,6 +142,8 @@ const App = () => {
         onChange={(_, value) => setState({ sliderValue: value as number })}
         onChangeCommitted={(_, value) => setTime(value as number)}
       />
+      <Button onClick={() => setTime(0)}>Play</Button>
+      <Button onClick={() => setTime(0)}>Stop</Button>
       <Button onClick={() => setTime(0)}>Reset</Button>
       <Button onClick={act.printWaveForm}>Print waveform</Button>
     </Grid>

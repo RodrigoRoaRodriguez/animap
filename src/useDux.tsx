@@ -18,7 +18,7 @@ export function useDux<
     state: S,
     setState: SetState<S>,
   ) => {
-    [K in keyof ReturnType<A>]: Function
+    [K in keyof ReturnType<A>]: ReturnType<A>[K]
   }
 >(initialState: S, getActs: A) {
   const [state, setState] = useReducer(
@@ -37,3 +37,18 @@ export function useDux<
  * @arg S state, usually `typeof initialState`.
  */
 export type SetState<S> = Dispatch<Partial<S>>
+
+/**
+ * This functions types acts correctly
+ */
+export function typeActs<
+  S,
+  A extends (
+    state: S,
+    setState: SetState<S>,
+  ) => {
+    [K in keyof ReturnType<A>]: ReturnType<A>[K]
+  }
+>(initialState: S, getActs: A) {
+  return getActs
+}
