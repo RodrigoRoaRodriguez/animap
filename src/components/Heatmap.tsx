@@ -1,6 +1,6 @@
 import * as React from 'react'
-import Texture from './Texture'
-import { useValueToColor } from './hooks/useValueToColor'
+import Texture from '../Texture'
+import { useValueToColor } from '../hooks/useValueToColor'
 
 interface ownProps {
   data: number[][]

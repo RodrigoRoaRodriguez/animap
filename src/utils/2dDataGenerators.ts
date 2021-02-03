@@ -1,7 +1,7 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
-import { XYMatrix } from './utils/utils'
+import { XYMatrix } from './utils'
 import { Waveform, gauss, triangle, sawtooth, sine, square } from './Waveform'
-import { make2d, map2d, map3d, make3d } from './utils/array'
+import { make2d, map2d, map3d, make3d } from './array'
 
 /**
  * Horizontally maps a Waveform function over a square matrix
@@ -11,7 +11,7 @@ const horizontalMap = (waveform: Waveform) => ({
   size = 50,
   periods = 2,
 } = {}) =>
-  new XYMatrix({ size }).map2d(value => waveform({ periods, size, value }))
+  new XYMatrix({ size }).map2d((value) => waveform({ periods, size, value }))
 
 /* Generators */
 export const horizontal = {
@@ -32,19 +32,17 @@ type Coords = {
  * @param waveform function mapped over the matrix to describe the graph shape
  */
 const matrixMap2d = (valueFn: (xy: Coords, size: number) => number) => (
-  waveform: Waveform
+  waveform: Waveform,
 ) => ({
   size = 50,
   periods = 2,
   transform = (value = 0) => value,
   time = 0,
 } = {}) =>
-  map2d(
-    make2d(size), 
-    (_, coords) =>
+  map2d(make2d(size), (_, coords) =>
     transform(
-      waveform({ periods, size, value: time * size + valueFn(coords, size) })
-    )
+      waveform({ periods, size, value: time * size + valueFn(coords, size) }),
+    ),
   )
 
 /**
@@ -52,19 +50,17 @@ const matrixMap2d = (valueFn: (xy: Coords, size: number) => number) => (
  * @param waveform function mapped over the matrix to describe the graph shape
  */
 const matrixMap3d = (valueFn: (xy: Coords, size: number) => number) => (
-  waveform: Waveform
+  waveform: Waveform,
 ) => ({
   size = 50,
   periods = 2,
   transform = (value = 0) => value,
   time = 0,
 } = {}) =>
-  map3d(
-    make3d(size), 
-    (_, coords) =>
+  map3d(make3d(size), (_, coords) =>
     transform(
-      waveform({ periods, size, value: time * size + valueFn(coords, size) })
-    )
+      waveform({ periods, size, value: time * size + valueFn(coords, size) }),
+    ),
   )
 
 /**
@@ -81,7 +77,6 @@ const byDistance = ({ x, y }: Coords, size = 1) =>
  * @param waveform function mapped over the matrix to describe the graph shape
  */
 const radialMap = matrixMap2d(byDistance)
-
 
 export const radial = {
   // gauss: radialMap(gauss),

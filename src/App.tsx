@@ -3,10 +3,10 @@ import * as d3 from 'd3'
 import * as React from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
-import { radial } from './2dDataGenerators'
-import Heatmap from './Heatmap'
+import { radial } from './utils/2dDataGenerators'
+import Heatmap from './components/Heatmap'
 import { useAnimation } from './hooks/useAnimation'
-import { Picker } from './Picker'
+import { Picker } from './components/Picker'
 import { useDux } from './useDux'
 
 declare module 'd3' {
