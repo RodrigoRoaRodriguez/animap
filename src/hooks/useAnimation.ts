@@ -52,7 +52,7 @@ function animationLoop({
 }: any) {
   // }: Dux<typeof initialState, typeof acts>) {
   let animationFrame: number
-  let stopTimer: number
+  let stopTimer: NodeJS.Timeout
   // Function to be executed on each animation frame
   function animationLoop() {
     renderFrame()
@@ -69,7 +69,7 @@ function animationLoop({
   }
 
   return () => {
-    let timerDelay: number
+    let timerDelay: NodeJS.Timeout
     // Start after specified delay (defaults to 0)
     if (playing) timerDelay = setTimeout(onStart, delay)
     // Cleanup: remove listeners when the components is unmounted.
