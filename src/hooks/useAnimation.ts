@@ -31,6 +31,7 @@ export function useAnimation({
   // Reset when dependencies change
   useEffect(reset, deps)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
     animationLoop(dux),
     [start, duration, delay], // Re-run effect when duration or delay change
@@ -46,13 +47,12 @@ export function useAnimation({
 }
 
 function animationLoop({
-  state: { elapsed, duration, delay, playing },
-  setState,
+  state: { duration, delay, playing },
   act: { renderFrame },
 }: any) {
   // }: Dux<typeof initialState, typeof acts>) {
   let animationFrame: number
-  let stopTimer: NodeJS.Timeout
+  let stopTimer: ReturnType<typeof setTimeout>
   // Function to be executed on each animation frame
   function animationLoop() {
     renderFrame()
@@ -69,7 +69,7 @@ function animationLoop({
   }
 
   return () => {
-    let timerDelay: NodeJS.Timeout
+    let timerDelay: ReturnType<typeof setTimeout>
     // Start after specified delay (defaults to 0)
     if (playing) timerDelay = setTimeout(onStart, delay)
     // Cleanup: remove listeners when the components is unmounted.
