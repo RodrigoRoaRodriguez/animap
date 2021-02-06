@@ -1,29 +1,27 @@
-import { Button, Card, Grid, makeStyles, Slider } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  Grid,
+  IconButton,
+  makeStyles,
+  Slider,
+} from '@material-ui/core'
 import * as d3 from 'd3'
 import * as React from 'react'
-import { useState } from 'react'
-import styled from 'styled-components'
 import { radial } from './utils/2dDataGenerators'
 import Heatmap from './components/Heatmap'
 import { useAnimation } from './hooks/useAnimation'
 import { Picker } from './components/Picker'
 import { useDux } from './useDux'
 
+import PauseIcon from '@material-ui/icons/Pause'
+import PlayArrow from '@material-ui/icons/PlayArrow'
+import StopIcon from '@material-ui/icons/Stop'
+
 declare module 'd3' {
   export function interpolateTurbo(t: number): string
   export function interpolateCividis(t: number): string
 }
-
-const Title = styled.h1`
-  color: #eef;
-  font-weight: 400;
-  margin-bottom: 0;
-`
-
-const Sub = styled.h2`
-  font-weight: 100;
-  margin-top: 0.5em;
-`
 
 const PADDING = 0.2
 export const getSize = () => {
@@ -68,15 +66,21 @@ const initialState = {
 }
 
 const App = () => {
+  const [time, reset, setTime] = useAnimation() // { deps: [waveform] })
   const {
     state: { waveform, colorScale, sliderValue },
     setState,
     act,
   } = useDux(initialState, (state) => ({
     printWaveForm: () => alert(state.waveform),
+    reset: () => setTime(0),
+    play: () => setTime(0),
+    pause: () => setTime(0),
+    setWaveform: (waveform: string) => setState({ waveform }),
+    sliderChangeCommitted: ({}, value: number | number[]) =>
+      setTime(value as number),
   }))
 
-  const [time, reset, setTime] = useAnimation({ deps: [waveform] })
   const classes = useStyles({})
 
   React.useEffect(() => {
@@ -84,52 +88,40 @@ const App = () => {
   }, [time, setState])
 
   return (
-    <Grid
-      container
-      direction="column"
-      justify="center"
-      alignItems="center"
-      className={classes.root}
-    >
-      <Title>Heatmap {waveform}</Title>
-      <Sub>Keep working to see some magic happen 🌈✨</Sub>
+    <>
+      <h1>Heatmap {waveform}</h1>
+      <h2>Keep working to see some magic happen 🌈✨</h2>
       <h2>time: {Math.round(time * 100)}%</h2>
-      <Grid container justify="center" spacing={2}>
-        <Grid
-          container
-          item
-          alignContent="space-between"
-          spacing={2}
-          sm={12}
-          md={2}
-        >
-          <Card className={classes.card}>
-            <Picker
-              title="Waveform: "
-              values={Object.keys(radial)}
-              onChange={(waveform) => setState({ waveform })}
-            />
-          </Card>
-        </Grid>
-        <Grid item>
-          <Heatmap
-            onClick={reset}
-            style={{ ...getSize(), borderRadius: 4 }}
-            data={radial[waveform as keyof typeof radial]({ ...options, time })}
-            time={time}
-            color={colorScales[colorScale as keyof typeof colorScales]}
-          />
-        </Grid>
-        <Grid item>
-          <Card className={classes.card}>
-            <Picker
-              title="Set color scheme: "
-              values={Object.keys(colorScales)}
-              onChange={(colorScale) => setState({ colorScale })}
-            />
-          </Card>
-        </Grid>
-      </Grid>
+      <Card className={classes.card}>
+        <Picker
+          title="Waveform: "
+          values={Object.keys(radial)}
+          onChange={(waveform) => setState({ waveform })}
+        />
+      </Card>
+      <Heatmap
+        onClick={reset}
+        style={{ ...getSize(), borderRadius: 4 }}
+        data={radial[waveform as keyof typeof radial]({ ...options, time })}
+        time={time}
+        color={colorScales[colorScale as keyof typeof colorScales]}
+      />
+      <Card className={classes.card}>
+        <Picker
+          title="Set color scheme: "
+          values={Object.keys(colorScales)}
+          onChange={(colorScale) => setState({ colorScale })}
+        />
+      </Card>
+      <IconButton aria-label="play">
+        <PlayArrow />
+      </IconButton>
+      <IconButton aria-label="pause">
+        <PauseIcon />
+      </IconButton>
+      <IconButton aria-label="stop">
+        <StopIcon />
+      </IconButton>
       <Slider
         className={classes.slider}
         defaultValue={0}
@@ -140,13 +132,13 @@ const App = () => {
         max={1}
         value={sliderValue}
         onChange={(_, value) => setState({ sliderValue: value as number })}
-        onChangeCommitted={(_, value) => setTime(value as number)}
+        onChangeCommitted={act.sliderChangeCommitted}
       />
-      <Button onClick={() => setTime(0)}>Play</Button>
+      <Button onClick={act.play}>Play</Button>
       <Button onClick={() => setTime(0)}>Stop</Button>
       <Button onClick={() => setTime(0)}>Reset</Button>
       <Button onClick={act.printWaveForm}>Print waveform</Button>
-    </Grid>
+    </>
   )
 }
 
