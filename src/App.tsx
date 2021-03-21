@@ -10,7 +10,7 @@ import * as d3 from 'd3'
 import * as React from 'react'
 import { radial } from './utils/2dDataGenerators'
 import Heatmap from './components/Heatmap'
-import { useAnimation } from './hooks/useAnimation'
+import { useAnimation, play } from './hooks/useAnimation'
 import { Picker } from './components/Picker'
 import { useDux } from './useDux'
 
@@ -134,8 +134,6 @@ const App = () => {
         onChange={(_, value) => setState({ sliderValue: value as number })}
         onChangeCommitted={act.sliderChangeCommitted}
       />
-      <Button onClick={act.play}>Play</Button>
-      <Button onClick={() => setTime(0)}>Stop</Button>
       <Button onClick={() => setTime(0)}>Reset</Button>
       <Button onClick={act.printWaveForm}>Print waveform</Button>
     </>

@@ -1,55 +1,50 @@
 import { useEffect } from 'react'
 import { typeActs, useDux } from '../useDux'
-// import { Acts, useDux } from '../useDux'
+import { createState, useState } from '@hookstate/core'
 
-export const initialState = {
+const initialState = {}
+
+type AnimationStore = {
+  renderFrame: () => void
+} & typeof initialState
+
+export const animationState = createState({
   elapsed: 0,
   start: Date.now(),
   duration: 1000,
   delay: 0,
   playing: true,
-}
+})
 
-const acts = typeActs(initialState, ({ start }, setState) => ({
-  renderFrame: () => setState({ elapsed: Date.now() - start }),
-}))
+const renderFrame = () =>
+  animationState.elapsed.set(Date.now() - animationState.start.get())
+
+const setTimeTo = (percentage: number) =>
+  animationState.start.set(
+    Date.now() - animationState.duration.get() * percentage,
+  )
+
+const reset = () => animationState.start.set(Date.now())
+
+export const play = () => animationLoop()
 
 // Hook
-export function useAnimation({
-  duration = 1000,
-  delay = 0,
-  deps = [] as any[],
-} = {}) {
-  const dux = useDux({ ...initialState, duration, delay }, acts)
+export function useAnimation() {
+  const state = useState(animationState)
 
-  const {
-    state: { start, elapsed },
-    setState,
-  } = dux
-
-  const reset = () => setState({ start: Date.now() })
-  // Reset when dependencies change
-  useEffect(reset, deps)
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
-    animationLoop(dux),
-    [start, duration, delay], // Re-run effect when duration or delay change
+    animationLoop(),
+    [], // Re-run effect when duration or delay change
   )
 
   // Normalize, so time is on a scale from 0 to 1
-  const normalizedTime = Math.min(1, elapsed / duration)
+  const normalizedTime = Math.min(1, state.elapsed.get() / state.duration.get())
 
-  const setTimeTo = (percentage: number) =>
-    setState({ start: Date.now() - duration * percentage })
   // Return altered value based on our specified easing function
   return [normalizedTime, reset, setTimeTo] as const
 }
 
-function animationLoop({
-  state: { duration, delay, playing },
-  act: { renderFrame },
-}: any) {
+function animationLoop() {
   // }: Dux<typeof initialState, typeof acts>) {
   let animationFrame: number
   let stopTimer: ReturnType<typeof setTimeout>
@@ -64,14 +59,15 @@ function animationLoop({
     stopTimer = setTimeout(() => {
       cancelAnimationFrame(animationFrame)
       // renderFrame()
-    }, duration)
+    }, animationState.duration.get())
     animationLoop()
   }
 
   return () => {
     let timerDelay: ReturnType<typeof setTimeout>
     // Start after specified delay (defaults to 0)
-    if (playing) timerDelay = setTimeout(onStart, delay)
+    if (animationState.playing.get())
+      timerDelay = setTimeout(onStart, animationState.delay.get())
     // Cleanup: remove listeners when the components is unmounted.
     return () => {
       clearTimeout(stopTimer)
