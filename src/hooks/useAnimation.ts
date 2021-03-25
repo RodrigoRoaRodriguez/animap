@@ -8,10 +8,11 @@ export const animationState = createState({
   playing: true,
 })
 
-const setTimeTo = (percentage: number) => animationState.elapsed.set(percentage)
-// animationState.start.set(
-//   Date.now() - animationState.duration.get() * percentage,
-// )
+const setTimeTo = (percentage: number) =>
+  animationState.merge({
+    start: Date.now() - animationState.duration.get() * percentage,
+    elapsed: animationState.duration.get() * percentage,
+  })
 
 export const play = () =>
   animationState.merge({
