@@ -1,15 +1,30 @@
-import { Button, Card, IconButton, makeStyles, Slider } from '@material-ui/core'
+import {
+  Button,
+  Card,
+  Grid,
+  IconButton,
+  makeStyles,
+  Slider,
+} from '@material-ui/core'
 import * as d3 from 'd3'
 import * as React from 'react'
 import { radial } from './utils/2dDataGenerators'
 import Heatmap from './components/Heatmap'
-import { useAnimation, play } from './hooks/useAnimation'
+import {
+  useAnimation,
+  play,
+  pause,
+  reset,
+  animationState,
+} from './hooks/useAnimation'
 import { Picker } from './components/Picker'
 import { useDux } from './useDux'
 
 import PauseIcon from '@material-ui/icons/Pause'
 import PlayArrow from '@material-ui/icons/PlayArrow'
 import StopIcon from '@material-ui/icons/Stop'
+import { useState } from '@hookstate/core'
+import { join } from './utils/join'
 
 const PADDING = 0.2
 export const getSize = () => {
@@ -25,13 +40,25 @@ const options = {
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    display: 'grid',
     flexGrow: 1,
-    gridTemplateAreas: 'waveform heatmap colorScale',
+    gridTemplateAreas: '"waveforms heatmap colorScales"',
   },
   card: {
     padding: theme.spacing(2),
     textAlign: 'center',
-    gridArea: 'waveform',
+  },
+  waveforms: {
+    gridArea: 'waveforms',
+  },
+  colorScales: {
+    gridArea: 'colorScales',
+  },
+  heatmap: {
+    gridArea: 'heatmap',
+    height: '100%',
+    width: '100%',
+    borderRadius: 4,
   },
   slider: {
     width: getSize().width,
@@ -57,7 +84,7 @@ const initialState = {
 }
 
 const App = () => {
-  const [time, reset, setTime] = useAnimation() // { deps: [waveform] })
+  const [time, setTime] = useAnimation() // { deps: [waveform] })
   const {
     state: { waveform, colorScale, sliderValue },
     setState,
@@ -74,14 +101,14 @@ const App = () => {
   React.useEffect(() => {
     setState({ sliderValue: time })
   }, [time, setState])
-
+  const state = useState(animationState)
   return (
     <>
-      <h1>Heatmap {waveform}</h1>
+      <h1>Heatmap {String(state.playing.get())}</h1>
       <h2>Keep working to see some magic happen 🌈✨</h2>
       <h2>time: {Math.round(time * 100)}%</h2>
       <div className={classes.root}>
-        <Card className={classes.card}>
+        <Card className={join(classes.card, classes.waveforms)}>
           <Picker
             title="Waveform: "
             values={Object.keys(radial)}
@@ -90,12 +117,12 @@ const App = () => {
         </Card>
         <Heatmap
           onClick={reset}
-          style={{ ...getSize(), borderRadius: 4 }}
+          className={classes.heatmap}
           data={radial[waveform as keyof typeof radial]({ ...options, time })}
           time={time}
           color={colorScales[colorScale as keyof typeof colorScales]}
         />
-        <Card className={classes.card}>
+        <Card className={join(classes.card, classes.colorScales)}>
           <Picker
             title="Set color scheme: "
             values={Object.keys(colorScales)}
@@ -107,10 +134,10 @@ const App = () => {
       <IconButton aria-label="play" onClick={play}>
         <PlayArrow />
       </IconButton>
-      <IconButton aria-label="pause" onClick={play}>
+      <IconButton aria-label="pause" onClick={pause}>
         <PauseIcon />
       </IconButton>
-      <IconButton aria-label="stop" onClick={play}>
+      <IconButton aria-label="stop" onClick={reset}>
         <StopIcon />
       </IconButton>
       <Slider
