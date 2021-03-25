@@ -1,8 +1,5 @@
 import { useEffect } from 'react'
-import { typeActs, useDux } from '../useDux'
 import { createState, useState } from '@hookstate/core'
-
-const initialState = {}
 
 export const animationState = createState({
   elapsed: 0,
@@ -11,51 +8,49 @@ export const animationState = createState({
   playing: true,
 })
 
-type AnimationStore = {
-  renderFrame: () => void
-} & typeof initialState
+const setTimeTo = (percentage: number) => animationState.elapsed.set(percentage)
+// animationState.start.set(
+//   Date.now() - animationState.duration.get() * percentage,
+// )
 
-const renderFrame = () =>
-  animationState.elapsed.set(Date.now() - animationState.start.get())
+export const play = () =>
+  animationState.merge({
+    start: Date.now() - animationState.elapsed.get(),
+    playing: true,
+  })
 
-const setTimeTo = (percentage: number) =>
-  animationState.start.set(
-    Date.now() - animationState.duration.get() * percentage,
-  )
+export const reset = () =>
+  animationState.merge({ start: Date.now(), elapsed: 0 })
 
-const reset = () => animationState.start.set(Date.now())
-
-export const play = () => {} // UNIMPLEMENTED
+export const pause = () => animationState.merge({ playing: false })
 
 // Hook
 export function useAnimation() {
   const state = useState(animationState)
 
   let animationFrame: number
-  let stopTimer: ReturnType<typeof setTimeout>
   // Function to be executed on each animation frame
   function animationLoop() {
-    renderFrame()
-    animationFrame = requestAnimationFrame(animationLoop)
+    state.batch((state) => {
+      if (state.playing.get()) state.elapsed.set(Date.now() - state.start.get())
+      if (state.elapsed.get() < state.duration.get())
+        animationFrame = requestAnimationFrame(animationLoop)
+      else state.playing.set(false)
+    })
   }
 
   useEffect(() => {
     // Set a timeout to stop things when duration time elapses
-    stopTimer = setTimeout(() => {
-      cancelAnimationFrame(animationFrame)
-      // renderFrame()
-    }, animationState.duration.get())
-    animationLoop()
+    if (state.playing.get()) animationLoop()
     // Cleanup: remove listeners when the components is unmounted.
     return () => {
-      clearTimeout(stopTimer)
       cancelAnimationFrame(animationFrame)
     }
-  }, [])
+  }, [state.playing.get()])
 
   // Normalize, so time is on a scale from 0 to 1
   const normalizedTime = Math.min(1, state.elapsed.get() / state.duration.get())
 
   // Return altered value based on our specified easing function
-  return [normalizedTime, reset, setTimeTo] as const
+  return [normalizedTime, setTimeTo] as const
 }
