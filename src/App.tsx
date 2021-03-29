@@ -1,12 +1,4 @@
-import {
-  Button,
-  Card,
-  Grid,
-  IconButton,
-  makeStyles,
-  Slider,
-} from '@material-ui/core'
-import * as d3 from 'd3'
+import { Button, Card, IconButton, makeStyles, Slider } from '@material-ui/core'
 import * as React from 'react'
 import { radial } from './utils/2dDataGenerators'
 import Heatmap from './components/Heatmap'
@@ -22,9 +14,12 @@ import { useDux } from './useDux'
 
 import PauseIcon from '@material-ui/icons/Pause'
 import PlayArrow from '@material-ui/icons/PlayArrow'
+import ReplayIcon from '@material-ui/icons/Replay'
 import StopIcon from '@material-ui/icons/Stop'
+
 import { useState } from '@hookstate/core'
 import { join } from './utils/join'
+import { colorScales } from './colorScales'
 
 const PADDING = 0.2
 export const getSize = () => {
@@ -65,17 +60,6 @@ const useStyles = makeStyles((theme) => ({
     gridArea: 'colorScale',
   },
 }))
-
-const colorScales = {
-  "Rodrigo's": d3.interpolateHclLong('#012', '#ff6'),
-  Turbo: d3.interpolateTurbo,
-  Inferno: d3.interpolateInferno,
-  Cividis: d3.interpolateCividis,
-  Viridis: d3.interpolateViridis,
-  Warm: d3.interpolateWarm,
-  Cool: d3.interpolateCool,
-  CubeHelix: d3.interpolateCubehelixDefault,
-}
 
 const initialState = {
   waveform: Object.keys(radial)[0],
