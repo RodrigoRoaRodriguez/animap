@@ -23,6 +23,9 @@ export const play = () =>
 export const reset = () =>
   animationState.merge({ start: Date.now(), elapsed: 0 })
 
+export const replay = () =>
+  animationState.merge({ start: Date.now(), elapsed: 0, playing: true })
+
 export const pause = () => animationState.merge({ playing: false })
 
 // Hook

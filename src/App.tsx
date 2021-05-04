@@ -7,6 +7,7 @@ import {
   play,
   pause,
   reset,
+  replay,
   animationState,
 } from './hooks/useAnimation'
 import { Picker } from './components/Picker'
@@ -14,6 +15,7 @@ import { useDux } from './useDux'
 
 import PauseIcon from '@material-ui/icons/Pause'
 import PlayArrow from '@material-ui/icons/PlayArrow'
+import RefreshIcon from '@material-ui/icons/Refresh'
 import ReplayIcon from '@material-ui/icons/Replay'
 import StopIcon from '@material-ui/icons/Stop'
 
@@ -37,7 +39,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
     flexGrow: 1,
-    gridTemplateAreas: '"waveforms heatmap colorScales"',
+    gridTemplateColumns: 'auto auto auto',
+    gridTemplateAreas: '"waveforms main colorScales"',
+    margin: 'auto',
   },
   card: {
     padding: theme.spacing(2),
@@ -49,11 +53,14 @@ const useStyles = makeStyles((theme) => ({
   colorScales: {
     gridArea: 'colorScales',
   },
+  main: {
+    gridArea: 'main',
+  },
   heatmap: {
-    gridArea: 'heatmap',
-    height: '100%',
-    width: '100%',
+    height: '90vmin',
+    width: '90vmin',
     borderRadius: 4,
+    aspectRatio: '1',
   },
   slider: {
     width: getSize().width,
@@ -86,11 +93,22 @@ const App = () => {
     setState({ sliderValue: time })
   }, [time, setState])
   const state = useState(animationState)
+
+  let mainActionProps = {
+    'aria-label': 'play',
+    onClick: play,
+    children: <PlayArrow />,
+  }
+
+  if (time >= 1)
+    mainActionProps = {
+      'aria-label': 'play',
+      onClick: play,
+      children: <PlayArrow />,
+    }
+
   return (
     <>
-      <h1>Heatmap {String(state.playing.get())}</h1>
-      <h2>Keep working to see some magic happen 🌈✨</h2>
-      <h2>time: {Math.round(time * 100)}%</h2>
       <div className={classes.root}>
         <Card className={join(classes.card, classes.waveforms)}>
           <Picker
@@ -99,13 +117,44 @@ const App = () => {
             onChange={(waveform) => setState({ waveform })}
           />
         </Card>
-        <Heatmap
-          onClick={reset}
-          className={classes.heatmap}
-          data={radial[waveform as keyof typeof radial]({ ...options, time })}
-          time={time}
-          color={colorScales[colorScale as keyof typeof colorScales]}
-        />
+        <main className={classes.main}>
+          <Heatmap
+            className={classes.heatmap}
+            onClick={reset}
+            data={radial[waveform as keyof typeof radial]({ ...options, time })}
+            time={time}
+            color={colorScales[colorScale as keyof typeof colorScales]}
+          />
+          <div>
+            <IconButton {...mainActionProps} />
+            {/* <IconButton aria-label="play" onClick={play}>
+              <PlayArrow />
+            </IconButton> */}
+            <IconButton aria-label="pause" onClick={pause}>
+              <PauseIcon />
+            </IconButton>
+            <IconButton aria-label="stop" onClick={reset}>
+              <StopIcon />
+            </IconButton>
+            <IconButton aria-label="replay" onClick={replay}>
+              <RefreshIcon />
+            </IconButton>
+            <Slider
+              className={classes.slider}
+              defaultValue={0}
+              getAriaValueText={() => 'zero'}
+              valueLabelDisplay="auto"
+              step={0.01}
+              min={0}
+              max={1}
+              value={sliderValue}
+              onChange={(_, value) =>
+                setState({ sliderValue: value as number })
+              }
+              onChangeCommitted={act.sliderChangeCommitted}
+            />
+          </div>
+        </main>
         <Card className={join(classes.card, classes.colorScales)}>
           <Picker
             title="Set color scheme: "
@@ -114,30 +163,6 @@ const App = () => {
           />
         </Card>
       </div>
-
-      <IconButton aria-label="play" onClick={play}>
-        <PlayArrow />
-      </IconButton>
-      <IconButton aria-label="pause" onClick={pause}>
-        <PauseIcon />
-      </IconButton>
-      <IconButton aria-label="stop" onClick={reset}>
-        <StopIcon />
-      </IconButton>
-      <Slider
-        className={classes.slider}
-        defaultValue={0}
-        getAriaValueText={() => 'zero'}
-        valueLabelDisplay="auto"
-        step={0.01}
-        min={0}
-        max={1}
-        value={sliderValue}
-        onChange={(_, value) => setState({ sliderValue: value as number })}
-        onChangeCommitted={act.sliderChangeCommitted}
-      />
-      <Button onClick={() => setTime(0)}>Reset</Button>
-      <Button onClick={act.printWaveForm}>Print waveform</Button>
     </>
   )
 }
