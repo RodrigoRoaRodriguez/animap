@@ -1,4 +1,4 @@
-import { Button, Card, IconButton, makeStyles, Slider } from '@material-ui/core'
+import { Card, IconButton, Slider } from '@material-ui/core'
 import * as React from 'react'
 import { radial } from './utils/2dDataGenerators'
 import Heatmap from './components/Heatmap'
@@ -22,51 +22,13 @@ import StopIcon from '@material-ui/icons/Stop'
 import { useState } from '@hookstate/core'
 import { join } from './utils/join'
 import { colorScales } from './colorScales'
-
-const PADDING = 0.2
-export const getSize = () => {
-  let size = Math.min(window.innerWidth, window.innerHeight) / (1.5 + PADDING)
-  return { width: size, height: size }
-}
+import { useStyles } from './useStyles'
 
 const options = {
   // transform: addNoise(0.5),
   // periods: 2,
   size: 150,
 }
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'grid',
-    flexGrow: 1,
-    gridTemplateColumns: 'auto auto auto',
-    gridTemplateAreas: '"waveforms main colorScales"',
-    margin: 'auto',
-  },
-  card: {
-    padding: theme.spacing(2),
-    textAlign: 'center',
-  },
-  waveforms: {
-    gridArea: 'waveforms',
-  },
-  colorScales: {
-    gridArea: 'colorScales',
-  },
-  main: {
-    gridArea: 'main',
-  },
-  heatmap: {
-    height: '90vmin',
-    width: '90vmin',
-    borderRadius: 4,
-    aspectRatio: '1',
-  },
-  slider: {
-    width: getSize().width,
-    gridArea: 'colorScale',
-  },
-}))
 
 const initialState = {
   waveform: Object.keys(radial)[0],
