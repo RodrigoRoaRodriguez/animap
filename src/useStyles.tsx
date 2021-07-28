@@ -10,27 +10,29 @@ export const getSize = () => {
 export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
-    flexGrow: 1,
-    gridTemplateColumns: 'auto auto auto',
-    gridTemplateAreas: '"waveforms main colorScales"',
+    gridTemplateColumns: 'auto auto',
+    gridTemplateAreas: `
+    "options main"
+    ". controls"
+    `,
     margin: 'auto',
   },
   card: {
     padding: theme.spacing(2),
     textAlign: 'center',
   },
-  waveforms: {
-    gridArea: 'waveforms',
-  },
-  colorScales: {
-    gridArea: 'colorScales',
+  options: {
+    gridArea: 'options',
   },
   main: {
     gridArea: 'main',
   },
+  controls: {
+    gridArea: 'controls',
+  },
   heatmap: {
     height: '90vmin',
-    width: '90vmin',
+    maxWidth: '90vmin',
     borderRadius: 4,
     aspectRatio: '1',
   },
