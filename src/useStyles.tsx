@@ -10,12 +10,19 @@ export const getSize = () => {
 export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
-    gridTemplateColumns: '1fr auto 1fr',
-    gridTemplateAreas: `
-    "options main ."
-    "controls controls controls"
-    `,
     margin: 'auto',
+    gridTemplateAreas: `
+    "main"
+    "controls"
+    "options"
+    `,
+    [theme.breakpoints.up('md')]: {
+      gridTemplateColumns: '1fr auto 1fr',
+      gridTemplateAreas: `
+      "options main ."
+      "controls controls controls"
+      `,
+    },
   },
   card: {
     padding: theme.spacing(2),
@@ -24,9 +31,17 @@ export const useStyles = makeStyles((theme) => ({
   },
   options: {
     gridArea: 'options',
+    [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      placeItems: 'flex-end',
+      placeContent: 'flex-end',
+      justifyContent: 'space-between',
+    },
   },
   main: {
     gridArea: 'main',
+    display: 'grid',
+    justifyContent: 'center',
   },
   controls: {
     gridArea: 'controls',
