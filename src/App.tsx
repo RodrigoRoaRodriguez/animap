@@ -14,7 +14,6 @@ import {
   pause,
   play,
   replay,
-  reset,
   useAnimation,
 } from './hooks/useAnimation'
 import { useDux } from './useDux'
@@ -85,18 +84,22 @@ const App = () => {
           color={colorScales[colorScale as keyof typeof colorScales]}
         />
       </main>
-      <Card className={join(classes.card, classes.options)}>
-        <Picker
-          title="Waveform: "
-          values={Object.keys(radial)}
-          onChange={(waveform) => setState({ waveform })}
-        />
-        <Picker
-          title="Set color scheme: "
-          values={Object.keys(colorScales)}
-          onChange={(colorScale) => setState({ colorScale })}
-        />
-      </Card>
+      <div className={classes.options}>
+        <Card className={classes.card}>
+          <Picker
+            title="Waveform: "
+            values={Object.keys(radial)}
+            onChange={(waveform) => setState({ waveform })}
+          />
+        </Card>
+        <Card className={join(classes.card, classes.options)}>
+          <Picker
+            title="Set color scheme: "
+            values={Object.keys(colorScales)}
+            onChange={(colorScale) => setState({ colorScale })}
+          />
+        </Card>
+      </div>
       <div className={classes.controls}>
         <IconButton {...mainActionProps} />
         <Slider

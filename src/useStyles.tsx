@@ -10,16 +10,17 @@ export const getSize = () => {
 export const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
-    gridTemplateColumns: 'auto auto',
+    gridTemplateColumns: '1fr auto 1fr',
     gridTemplateAreas: `
-    "options main"
-    ". controls"
+    "options main ."
+    "controls controls controls"
     `,
     margin: 'auto',
   },
   card: {
     padding: theme.spacing(2),
     textAlign: 'center',
+    margin: `${4}px ${theme.spacing()}px`,
   },
   options: {
     gridArea: 'options',
@@ -29,6 +30,14 @@ export const useStyles = makeStyles((theme) => ({
   },
   controls: {
     gridArea: 'controls',
+    display: 'grid',
+    gridTemplateColumns: 'auto 1fr',
+    paddingRight: `${theme.spacing(2)}px`,
+    gap: `${theme.spacing()}px`,
+    alignItems: 'center',
+    '& canvas': {
+      display: 'block',
+    },
   },
   heatmap: {
     height: '90vmin',
@@ -37,7 +46,6 @@ export const useStyles = makeStyles((theme) => ({
     aspectRatio: '1',
   },
   slider: {
-    width: getSize().width,
-    gridArea: 'colorScale',
+    // gridArea: 'colorScale',
   },
 }))
