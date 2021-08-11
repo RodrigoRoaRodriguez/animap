@@ -18,9 +18,10 @@ import { useDux } from './useDux'
 import { useStyles } from './useStyles'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
+import { addNoise } from './utils/utils'
 
 const options = {
-  // transform: addNoise(0.5),
+  transform: addNoise(1.0),
   // periods: 2,
   size: 150,
 }
@@ -33,6 +34,7 @@ const initialState = {
 
 const App = () => {
   const [time, setTime] = useAnimation() // { deps: [waveform] })
+  // TODO: Redo this using hookState
   const {
     state: { waveform, colorScale, sliderValue },
     setState,

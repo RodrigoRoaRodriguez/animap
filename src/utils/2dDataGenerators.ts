@@ -1,17 +1,16 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
+import { make2d, make3d, map2d, map3d } from './array'
 import { XYMatrix } from './utils'
-import { Waveform, gauss, triangle, sawtooth, sine, square } from './Waveform'
-import { make2d, map2d, map3d, make3d } from './array'
+import { gauss, sawtooth, sine, square, triangle, Waveform } from './Waveform'
 
 /**
  * Horizontally maps a Waveform function over a square matrix
  * @param waveform a waveform function mapped over the matrix
  */
-const horizontalMap = (waveform: Waveform) => ({
-  size = 50,
-  periods = 2,
-} = {}) =>
-  new XYMatrix({ size }).map2d((value) => waveform({ periods, size, value }))
+const horizontalMap =
+  (waveform: Waveform) =>
+  ({ size = 50, periods = 2 } = {}) =>
+    new XYMatrix({ size }).map2d((value) => waveform({ periods, size, value }))
 
 /* Generators */
 export const horizontal = {
@@ -31,37 +30,41 @@ type Coords = {
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const matrixMap2d = (valueFn: (xy: Coords, size: number) => number) => (
-  waveform: Waveform,
-) => ({
-  size = 50,
-  periods = 2,
-  transform = (value = 0) => value,
-  time = 0,
-} = {}) =>
-  map2d(make2d(size), (_, coords) =>
-    transform(
-      waveform({ periods, size, value: time * size + valueFn(coords, size) }),
-    ),
-  )
+const matrixMap2d =
+  (valueFn: (xy: Coords, size: number) => number) =>
+  (waveform: Waveform) =>
+  ({
+    size = 50,
+    periods = 2,
+    transform = (value = 0, xy: Coords, size: number) => value,
+    time = 0,
+  } = {}) =>
+    map2d(make2d(size), (_, coords) =>
+      transform(
+        waveform({ periods, size, value: time * size + valueFn(coords, size) }),
+        coords,
+        size,
+      ),
+    )
 
 /**
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const matrixMap3d = (valueFn: (xy: Coords, size: number) => number) => (
-  waveform: Waveform,
-) => ({
-  size = 50,
-  periods = 2,
-  transform = (value = 0) => value,
-  time = 0,
-} = {}) =>
-  map3d(make3d(size), (_, coords) =>
-    transform(
-      waveform({ periods, size, value: time * size + valueFn(coords, size) }),
-    ),
-  )
+const matrixMap3d =
+  (valueFn: (xy: Coords, size: number) => number) =>
+  (waveform: Waveform) =>
+  ({
+    size = 50,
+    periods = 2,
+    transform = (value = 0) => value,
+    time = 0,
+  } = {}) =>
+    map3d(make3d(size), (_, coords) =>
+      transform(
+        waveform({ periods, size, value: time * size + valueFn(coords, size) }),
+      ),
+    )
 
 /**
  * Measures Euclidean distance between the center of the chart and a coordianate
