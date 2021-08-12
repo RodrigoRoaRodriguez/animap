@@ -1,7 +1,16 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
 import { make2d, make3d, map2d, map3d } from './array'
+import { Coords } from './Coords'
 import { XYMatrix } from './utils'
-import { gauss, sawtooth, sine, square, triangle, Waveform } from './Waveform'
+import {
+  gauss,
+  none,
+  sawtooth,
+  sine,
+  square,
+  triangle,
+  Waveform,
+} from './Waveform'
 
 /**
  * Horizontally maps a Waveform function over a square matrix
@@ -19,11 +28,6 @@ export const horizontal = {
   sine: horizontalMap(sine),
   square: horizontalMap(square),
   triangle: horizontalMap(triangle),
-}
-
-type Coords = {
-  x: number
-  y: number
 }
 
 /**
@@ -87,4 +91,5 @@ export const radial = {
   sine: radialMap(sine),
   square: radialMap(square),
   triangle: radialMap(triangle),
+  none: radialMap(none),
 } as const

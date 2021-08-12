@@ -19,3 +19,5 @@ export const gauss: Waveform = ({ periods, size, value }) =>
 
 export const triangle: Waveform = ({ periods, size, value }) =>
   1 - Math.abs((((value * periods * 2) / (size - 1)) % 2) - 1)
+
+export const none: Waveform = () => 0
