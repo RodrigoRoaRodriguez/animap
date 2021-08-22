@@ -18,8 +18,19 @@ export class XYMatrix extends Array<number[]> {
     super.map((row, y) => row.map((value, x) => fn(value, { x, y }, this)))
 }
 
-export const addNoise = (magnitude = 0) => (value = 0) =>
-  value + (Math.random() - 0.5) * 2 * magnitude
+const clamp = (num: number, min: number, max: number) =>
+  Math.min(Math.max(num, min), max)
+
+export const addNoise =
+  (magnitude = 0) =>
+  (value = 0) =>
+    clamp(value + (Math.random() - 0.5) * 2 * magnitude, -1, 1)
+
+export const multNoise =
+  (magnitude = 0) =>
+  (value = 0) =>
+    (Math.random() - 0.5) * 2 * magnitude * value +
+    (Math.random() - 0.5) * 2 * magnitude
 
 export function normalize(max = 1, min = 0) {
   return (value: number) => (value - min) / (max - min)
