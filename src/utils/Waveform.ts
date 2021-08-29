@@ -6,7 +6,7 @@ export type Waveform = (args: {
 }) => number
 
 export const sawtooth: Waveform = ({ periods, size, value }) =>
-  (size - Math.abs((value % (size / periods)) - size)) / size
+  ((size - Math.abs((value % (size / periods)) - size)) * 4) / size
 
 export const sine: Waveform = ({ periods, size, value }) =>
   Math.sin((value / (size - 1)) * Math.PI * 2 * periods)
