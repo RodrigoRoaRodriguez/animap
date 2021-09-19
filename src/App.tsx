@@ -1,4 +1,4 @@
-import { useState } from '@hookstate/core'
+import { useState as useHookstate } from '@hookstate/core'
 import { Card, IconButton, Slider } from '@material-ui/core'
 import PauseIcon from '@material-ui/icons/Pause'
 import PlayArrow from '@material-ui/icons/PlayArrow'
@@ -19,24 +19,19 @@ import { useStyles } from './useStyles'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
 import { addNoise } from './utils/utils'
-
-const options = {
-  transform: addNoise(1.0),
-  // periods: 2,
-  size: 150,
-}
+// Add empty waveform
 
 const initialState = {
   waveform: Object.keys(radial)[0],
   colorScale: Object.keys(colorScales)[0],
-  sliderValue: 0,
+  timeSliderValue: 0,
 }
 
 const App = () => {
-  const [time, setTime] = useAnimation() // { deps: [waveform] })
+  const [time, setTime] = useAnimation()
   // TODO: Redo this using hookState
   const {
-    state: { waveform, colorScale, sliderValue },
+    state: { waveform, colorScale, timeSliderValue },
     setState,
     act,
   } = useDux(initialState, (state) => ({
@@ -46,12 +41,17 @@ const App = () => {
       setTime(value as number),
   }))
 
+  const { noiseMagnitude } = useHookstate({
+    noiseMagnitude: 0.25,
+  })
+
   const classes = useStyles({})
 
   React.useEffect(() => {
-    setState({ sliderValue: time })
+    setState({ timeSliderValue: time })
   }, [time, setState])
-  const state = useState(animationState)
+
+  const animation = useHookstate(animationState)
 
   let mainActionProps = {
     'aria-label': 'play',
@@ -59,7 +59,7 @@ const App = () => {
     children: <PlayArrow />,
   }
 
-  if (state.playing.get())
+  if (animation.playing.get())
     mainActionProps = {
       'aria-label': 'pause',
       onClick: pause,
@@ -79,7 +79,12 @@ const App = () => {
         <Heatmap
           className={classes.heatmap}
           onClick={mainActionProps.onClick}
-          data={radial[waveform as keyof typeof radial]({ ...options, time })}
+          data={radial[waveform as keyof typeof radial]({
+            transform: addNoise(noiseMagnitude.get()),
+            periods: 4,
+            size: 100,
+            time,
+          })}
           time={time}
           color={colorScales[colorScale as keyof typeof colorScales]}
         />
@@ -99,19 +104,36 @@ const App = () => {
             onChange={(colorScale) => setState({ colorScale })}
           />
         </Card>
+        <Card className={join(classes.card, classes.options)}>
+          <Picker
+            title="Noise: "
+            values={[]}
+            onChange={(colorScale) => setState({ colorScale })}
+          />
+          <Slider
+            value={noiseMagnitude.get()}
+            onChange={(_, value) =>
+              typeof value === 'number' && noiseMagnitude.set(value)
+            }
+            aria-labelledby="noise-magnitude"
+            step={0.01}
+            max={3}
+            valueLabelDisplay="auto"
+          />
+        </Card>
       </div>
       <div className={classes.controls}>
         <IconButton {...mainActionProps} />
         <Slider
           className={classes.slider}
           defaultValue={0}
-          getAriaValueText={() => 'zero'}
           valueLabelDisplay="auto"
           step={0.01}
-          min={0}
           max={1}
-          value={sliderValue}
-          onChange={(_, value) => setState({ sliderValue: value as number })}
+          value={timeSliderValue}
+          onChange={(_, value) =>
+            setState({ timeSliderValue: value as number })
+          }
           onChangeCommitted={act.sliderChangeCommitted}
         />
       </div>

@@ -1,6 +1,6 @@
 import * as React from 'react'
+import { useHardcodedValueToColor } from '../hooks/useValueToColor'
 import Texture from '../Texture'
-import { useValueToColor } from '../hooks/useValueToColor'
 
 interface ownProps {
   data: number[][]
@@ -12,7 +12,7 @@ interface ownProps {
 type props = Omit<React.HTMLProps<HTMLCanvasElement>, keyof ownProps> & ownProps
 
 const Heatmap = ({ color, data, range, ...canvasProps }: props) => {
-  const pixels = useValueToColor({ color, data, range })
+  const pixels = useHardcodedValueToColor({ color, data, range })
   return <Texture {...canvasProps} pixels={pixels} />
 }
 

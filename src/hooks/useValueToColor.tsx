@@ -1,7 +1,7 @@
-import * as d3 from 'd3';
-import { Color } from '../types/Color';
-import { map2d } from '../utils/array';
-import { normalize } from '../utils/utils';
+import * as d3 from 'd3'
+import { Color } from '../types/Color'
+import { map2d } from '../utils/array'
+import { normalize } from '../utils/utils'
 
 export function toColorInterpolator(transferFn: (value: number) => string) {
   return function interpolator(number: number) {
@@ -15,11 +15,11 @@ export const placeholderData = [
   [0, 255, 0, 255],
   [0, 0, 255, 255],
   [0, 0, 0, 255],
-];
+]
 
 export type Args = {
   color?: (id: any) => any
-  data?: number[][] 
+  data?: number[][]
   range?: {
     max?: number
     min?: number
@@ -31,7 +31,17 @@ export function useValueToColor({
   data = placeholderData,
   range: {
     max = Math.max(...data.flat()),
-    min = Math.min(...data.flat()), } = {}, }: Args = {}) {
-  const colorize = toColorInterpolator(value => color(normalize(max, min)(value)));
-  return map2d(data, colorize);
+    min = Math.min(...data.flat()),
+  } = {},
+}: Args = {}) {
+  const colorize = toColorInterpolator((value) =>
+    color(normalize(max, min)(value)),
+  )
+  return map2d(data, colorize)
+}
+export function useHardcodedValueToColor({
+  color = d3.interpolateHclLong('#012', '#ff6'),
+  data = placeholderData,
+}: Args = {}) {
+  return map2d(data, toColorInterpolator(color))
 }

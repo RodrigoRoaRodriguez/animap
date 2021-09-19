@@ -1,3 +1,6 @@
+import SimplexNoise from 'simplex-noise'
+import { Coords } from './Coords'
+
 type fn2d = (
   index: number,
   coordinates: { x: number; y: number },
@@ -21,16 +24,18 @@ export class XYMatrix extends Array<number[]> {
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max)
 
+// export const addNoise =
+//   (magnitude = 0) =>
+//   (value = 0) =>
+//     clamp(value + (Math.random() - 0.5) * 2 * magnitude, -1, 1)
+
+const simplex = new SimplexNoise()
+
 export const addNoise =
   (magnitude = 0) =>
-  (value = 0) =>
-    clamp(value + (Math.random() - 0.5) * 2 * magnitude, -1, 1)
-
-export const multNoise =
-  (magnitude = 0) =>
-  (value = 0) =>
-    (Math.random() - 0.5) * 2 * magnitude * value +
-    (Math.random() - 0.5) * 2 * magnitude
+  (value = 0, { x, y }: Coords) =>
+    clamp(value + simplex.noise3D(x, y, value) * magnitude, -1, 1)
+// clamp(value + simplex.noise3D(x, y, value) * magnitude, -1, 1)
 
 export function normalize(max = 1, min = 0) {
   return (value: number) => (value - min) / (max - min)

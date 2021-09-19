@@ -1,10 +1,10 @@
-import { createMuiTheme, CssBaseline } from '@material-ui/core'
+import { createTheme, CssBaseline } from '@material-ui/core'
+import red from '@material-ui/core/colors/red'
 import { ThemeProvider } from '@material-ui/styles'
 import React from 'react'
 import App from '../App'
-import red from '@material-ui/core/colors/red'
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: 'dark',
     primary: red,
