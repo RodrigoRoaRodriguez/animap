@@ -1,5 +1,5 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
-import { make2d, make3d, map2d, map3d } from './array'
+import { make2d, map2d } from './array'
 import { Coords } from './Coords'
 import { none, sawtooth, sine, square, triangle, Waveform } from './Waveform'
 
