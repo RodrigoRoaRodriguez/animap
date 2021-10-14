@@ -7,13 +7,7 @@ import * as React from 'react'
 import { colorScales } from './colorScales'
 import Heatmap from './components/Heatmap'
 import { Picker } from './components/Picker'
-import {
-  animationState,
-  pause,
-  play,
-  replay,
-  useAnimation,
-} from './hooks/useAnimation'
+import { useAnimation } from './hooks/useAnimation'
 import { useDux } from './useDux'
 import { useStyles } from './useStyles'
 import { radial } from './utils/2dDataGenerators'
@@ -28,7 +22,10 @@ const initialState = {
 }
 
 const App = () => {
-  const [time, setTime] = useAnimation()
+  const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
+    useAnimation()
+  // Normalize, so time is on a scale from 0 to 1
+  const time = Math.min(1, elapsed / duration)
   // TODO: Redo this using hookState
   const {
     state: { waveform, colorScale, timeSliderValue },
@@ -38,7 +35,7 @@ const App = () => {
     printWaveForm: () => alert(state.waveform),
     setWaveform: (waveform: string) => setState({ waveform }),
     sliderChangeCommitted: (_: any, value: number | number[]) =>
-      setTime(value as number),
+      setTimeTo(value as number),
   }))
 
   const { noiseMagnitude } = useHookstate({
@@ -51,15 +48,13 @@ const App = () => {
     setState({ timeSliderValue: time })
   }, [time, setState])
 
-  const animation = useHookstate(animationState)
-
   let mainActionProps = {
     'aria-label': 'play',
     onClick: play,
     children: <PlayArrow />,
   }
 
-  if (animation.playing.get())
+  if (playing)
     mainActionProps = {
       'aria-label': 'pause',
       onClick: pause,

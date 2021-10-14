@@ -1,60 +1,61 @@
-import { useEffect } from 'react'
 import { createState, useState } from '@hookstate/core'
+import { useCallback, useEffect } from 'react'
+import { unstable_batchedUpdates } from 'react-dom'
+import create from 'zustand'
 
-export const animationState = createState({
+interface AnimationState {
+  elapsed: number
+  start: number
+  duration: number
+  playing: boolean
+  animationFrame: number
+  setTimeTo: (percentage: number) => void
+  play: () => void
+  reset: () => void
+  replay: () => void
+  pause: () => void
+  tick: () => void
+  loop: () => void
+}
+
+export const useAnimationStore = create<AnimationState>((set) => ({
   elapsed: 0,
   start: Date.now(),
   duration: 1000,
   playing: true,
-})
-
-const setTimeTo = (percentage: number) =>
-  animationState.merge({
-    start: Date.now() - animationState.duration.get() * percentage,
-    elapsed: animationState.duration.get() * percentage,
-  })
-
-export const play = () =>
-  animationState.merge({
-    start: Date.now() - animationState.elapsed.get(),
-    playing: true,
-  })
-
-export const reset = () =>
-  animationState.merge({ start: Date.now(), elapsed: 0 })
-
-export const replay = () =>
-  animationState.merge({ start: Date.now(), elapsed: 0, playing: true })
-
-export const pause = () => animationState.merge({ playing: false })
+  animationFrame: NaN,
+  setTimeTo: (percentage: number) =>
+    set(({ duration }) => ({
+      start: Date.now() - duration * percentage,
+      elapsed: duration * percentage,
+    })),
+  play: () =>
+    set(({ elapsed }) => ({ start: Date.now() - elapsed, playing: true })),
+  reset: () => set(() => ({ start: Date.now(), elapsed: 0 })),
+  replay: () => set(() => ({ start: Date.now(), elapsed: 0, playing: true })),
+  pause: () => set(() => ({ playing: false })),
+  tick: () => set((state) => ({ elapsed: Date.now() - state.start })),
+  loop: () =>
+    set((state) => {
+      if (state.playing) return { elapsed: Date.now() - state.start } as any
+      if (state.elapsed < state.duration)
+        return { animationFrame: requestAnimationFrame(state.loop) }
+      else return { playing: false }
+    }),
+}))
 
 // Hook
 export function useAnimation() {
-  const state = useState(animationState)
-
-  let animationFrame: number
-  // Function to be executed on each animation frame
-  function animationLoop() {
-    state.batch((state) => {
-      if (state.playing.get()) state.elapsed.set(Date.now() - state.start.get())
-      if (state.elapsed.get() < state.duration.get())
-        animationFrame = requestAnimationFrame(animationLoop)
-      else state.playing.set(false)
-    })
-  }
-
+  const animation = useAnimationStore()
   useEffect(() => {
     // Set a timeout to stop things when duration time elapses
-    if (state.playing.get()) animationLoop()
+    if (animation.playing) animation.loop()
     // Cleanup: remove listeners when the components is unmounted.
     return () => {
-      cancelAnimationFrame(animationFrame)
+      cancelAnimationFrame(animation.animationFrame)
     }
-  }, [state.playing.get()])
-
-  // Normalize, so time is on a scale from 0 to 1
-  const normalizedTime = Math.min(1, state.elapsed.get() / state.duration.get())
+  }, [animation.playing, animation.loop, animation])
 
   // Return altered value based on our specified easing function
-  return [normalizedTime, setTimeTo] as const
+  return animation
 }
