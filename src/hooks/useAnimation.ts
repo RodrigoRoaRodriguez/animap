@@ -1,7 +1,5 @@
-import { createState, useState } from '@hookstate/core'
-import { useCallback, useEffect } from 'react'
-import { unstable_batchedUpdates } from 'react-dom'
-import create from 'zustand'
+import { useEffect } from 'react'
+import create, { StateSelector } from 'zustand'
 
 interface AnimationState {
   elapsed: number
@@ -36,26 +34,33 @@ export const useAnimationStore = create<AnimationState>((set) => ({
   pause: () => set(() => ({ playing: false })),
   tick: () => set((state) => ({ elapsed: Date.now() - state.start })),
   loop: () =>
-    set((state) => {
-      if (state.playing) return { elapsed: Date.now() - state.start } as any
-      if (state.elapsed < state.duration)
-        return { animationFrame: requestAnimationFrame(state.loop) }
-      else return { playing: false }
+    set((animation) => {
+      if (animation.elapsed > animation.duration)
+        return { playing: false, elapsed: animation.duration } as any
+      return {
+        animationFrame: requestAnimationFrame(animation.loop),
+        elapsed: Date.now() - animation.start,
+      }
     }),
 }))
 
+const pickLoop = ({ loop }: AnimationState): (() => void) => loop
+const pickPlaying = ({ playing }: AnimationState): boolean => playing
 // Hook
-export function useAnimation() {
-  const animation = useAnimationStore()
+export function useAnimation(fn: StateSelector<AnimationState, any>) {
+  const loop = useAnimationStore(pickLoop)
+  const playing = useAnimationStore(pickPlaying)
+  const animationFrame = useAnimationStore(
+    ({ animationFrame }) => animationFrame,
+  )
   useEffect(() => {
-    // Set a timeout to stop things when duration time elapses
-    if (animation.playing) animation.loop()
+    if (playing) loop()
     // Cleanup: remove listeners when the components is unmounted.
     return () => {
-      cancelAnimationFrame(animation.animationFrame)
+      cancelAnimationFrame(animationFrame)
     }
-  }, [animation.playing, animation.loop, animation])
+  }, [playing, loop, animationFrame])
 
   // Return altered value based on our specified easing function
-  return animation
+  return useAnimationStore(fn)
 }

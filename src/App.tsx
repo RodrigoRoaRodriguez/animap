@@ -23,7 +23,17 @@ const initialState = {
 
 const App = () => {
   const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
-    useAnimation()
+    useAnimation(
+      ({ duration, elapsed, pause, play, playing, replay, setTimeTo }) => ({
+        duration,
+        elapsed,
+        pause,
+        play,
+        playing,
+        replay,
+        setTimeTo,
+      }),
+    )
   // Normalize, so time is on a scale from 0 to 1
   const time = Math.min(1, elapsed / duration)
   // TODO: Redo this using hookState
