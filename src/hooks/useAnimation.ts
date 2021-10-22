@@ -16,7 +16,7 @@ interface AnimationState {
   loop: () => void
 }
 
-export const useAnimationStore = create<AnimationState>((set) => ({
+export const useAnimationStore = create<AnimationState>((set, get) => ({
   elapsed: 0,
   start: Date.now(),
   duration: 1000,
@@ -33,15 +33,20 @@ export const useAnimationStore = create<AnimationState>((set) => ({
   replay: () => set(() => ({ start: Date.now(), elapsed: 0, playing: true })),
   pause: () => set(() => ({ playing: false })),
   tick: () => set((state) => ({ elapsed: Date.now() - state.start })),
-  loop: () =>
-    set((animation) => {
-      if (animation.elapsed > animation.duration)
-        return { playing: false, elapsed: animation.duration } as any
-      return {
-        animationFrame: requestAnimationFrame(animation.loop),
-        elapsed: Date.now() - animation.start,
-      }
-    }),
+  loop: () => {
+    if (get().playing)
+      set((animation) => {
+        if (animation.elapsed > animation.duration)
+          return { playing: false, elapsed: animation.duration } as any
+        return {
+          animationFrame: requestAnimationFrame(animation.loop),
+          elapsed: Date.now() - animation.start,
+        }
+      })
+    return () => {
+      cancelAnimationFrame(get().animationFrame)
+    }
+  },
 }))
 
 const pickLoop = ({ loop }: AnimationState): (() => void) => loop
@@ -50,16 +55,8 @@ const pickPlaying = ({ playing }: AnimationState): boolean => playing
 export function useAnimation(fn: StateSelector<AnimationState, any>) {
   const loop = useAnimationStore(pickLoop)
   const playing = useAnimationStore(pickPlaying)
-  const animationFrame = useAnimationStore(
-    ({ animationFrame }) => animationFrame,
-  )
-  useEffect(() => {
-    if (playing) loop()
-    // Cleanup: remove listeners when the components is unmounted.
-    return () => {
-      cancelAnimationFrame(animationFrame)
-    }
-  }, [playing, loop, animationFrame])
+
+  useEffect(loop, [playing, loop])
 
   // Return altered value based on our specified easing function
   return useAnimationStore(fn)
