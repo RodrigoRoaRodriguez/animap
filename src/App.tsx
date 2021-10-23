@@ -1,9 +1,11 @@
-import { useState as useHookstate } from '@hookstate/core'
 import { Card, IconButton, Slider } from '@material-ui/core'
 import PauseIcon from '@material-ui/icons/Pause'
 import PlayArrow from '@material-ui/icons/PlayArrow'
 import RefreshIcon from '@material-ui/icons/Refresh'
 import * as React from 'react'
+import { useState } from 'react'
+import create from 'zustand'
+import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
 import Heatmap from './components/Heatmap'
 import { Picker } from './components/Picker'
@@ -21,6 +23,10 @@ const initialState = {
   timeSliderValue: 0,
 }
 
+// const useAppStore = create<typeof initialState>((set) => ({
+//   ...initialState,
+// }))
+
 const App = () => {
   const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
     useAnimation(
@@ -36,21 +42,18 @@ const App = () => {
     )
   // Normalize, so time is on a scale from 0 to 1
   const time = Math.min(1, elapsed / duration)
-  // TODO: Redo this using hookState
+
   const {
     state: { waveform, colorScale, timeSliderValue },
     setState,
     act,
   } = useDux(initialState, (state) => ({
-    printWaveForm: () => alert(state.waveform),
     setWaveform: (waveform: string) => setState({ waveform }),
     sliderChangeCommitted: (_: any, value: number | number[]) =>
       setTimeTo(value as number),
   }))
 
-  const { noiseMagnitude } = useHookstate({
-    noiseMagnitude: 0.25,
-  })
+  const [noiseMagnitude, setNoiseMagnitude] = useState(0.25)
 
   const classes = useStyles({})
 
@@ -80,12 +83,21 @@ const App = () => {
 
   return (
     <div className={classes.root}>
+      {/* <AnimatedHeatmap
+        {...{
+          onClick: mainActionProps.onClick,
+          waveform,
+          noiseMagnitude,
+          time,
+          colorScale,
+        }}
+      /> */}
       <main className={classes.main}>
         <Heatmap
           className={classes.heatmap}
           onClick={mainActionProps.onClick}
           data={radial[waveform as keyof typeof radial]({
-            transform: addNoise(noiseMagnitude.get()),
+            transform: addNoise(noiseMagnitude),
             periods: 4,
             size: 100,
             time,
@@ -116,9 +128,9 @@ const App = () => {
             onChange={(colorScale) => setState({ colorScale })}
           />
           <Slider
-            value={noiseMagnitude.get()}
+            value={noiseMagnitude}
             onChange={(_, value) =>
-              typeof value === 'number' && noiseMagnitude.set(value)
+              typeof value === 'number' && setNoiseMagnitude(value)
             }
             aria-labelledby="noise-magnitude"
             step={0.01}
