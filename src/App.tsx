@@ -4,13 +4,11 @@ import PlayArrow from '@material-ui/icons/PlayArrow'
 import RefreshIcon from '@material-ui/icons/Refresh'
 import * as React from 'react'
 import { useState } from 'react'
-import create from 'zustand'
-import { AnimatedHeatmap } from './AnimatedHeatmap'
+import create, { SetState } from 'zustand'
 import { colorScales } from './colorScales'
 import Heatmap from './components/Heatmap'
 import { Picker } from './components/Picker'
 import { useAnimation } from './hooks/useAnimation'
-import { useDux } from './useDux'
 import { useStyles } from './useStyles'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
@@ -21,11 +19,17 @@ const initialState = {
   waveform: Object.keys(radial)[0],
   colorScale: Object.keys(colorScales)[0],
   timeSliderValue: 0,
+  noiseMagnitude: 0.25,
 }
 
-// const useAppStore = create<typeof initialState>((set) => ({
-//   ...initialState,
-// }))
+interface Actions {
+  setState: SetState<typeof initialState & Actions>
+}
+
+const useAppStore = create<typeof initialState & Actions>((set) => ({
+  ...initialState,
+  setState: set,
+}))
 
 const App = () => {
   const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
@@ -43,15 +47,7 @@ const App = () => {
   // Normalize, so time is on a scale from 0 to 1
   const time = Math.min(1, elapsed / duration)
 
-  const {
-    state: { waveform, colorScale, timeSliderValue },
-    setState,
-    act,
-  } = useDux(initialState, (state) => ({
-    setWaveform: (waveform: string) => setState({ waveform }),
-    sliderChangeCommitted: (_: any, value: number | number[]) =>
-      setTimeTo(value as number),
-  }))
+  const { waveform, colorScale, timeSliderValue, setState } = useAppStore()
 
   const [noiseMagnitude, setNoiseMagnitude] = useState(0.25)
 
@@ -151,7 +147,9 @@ const App = () => {
           onChange={(_, value) =>
             setState({ timeSliderValue: value as number })
           }
-          onChangeCommitted={act.sliderChangeCommitted}
+          onChangeCommitted={(_: any, value: number | number[]) =>
+            setTimeTo(value as number)
+          }
         />
       </div>
     </div>
