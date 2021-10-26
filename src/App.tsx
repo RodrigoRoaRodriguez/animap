@@ -1,18 +1,95 @@
-import { Card, IconButton, Slider } from '@material-ui/core'
-import PauseIcon from '@material-ui/icons/Pause'
-import PlayArrow from '@material-ui/icons/PlayArrow'
-import RefreshIcon from '@material-ui/icons/Refresh'
+import PauseIcon from '@mui/icons-material/Pause'
+import PlayArrow from '@mui/icons-material/PlayArrow'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import { Card, IconButton, Slider } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { useState } from 'react'
 import create, { SetState } from 'zustand'
+import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
 import Heatmap from './components/Heatmap'
 import { Picker } from './components/Picker'
 import { useAnimation } from './hooks/useAnimation'
-import { useStyles } from './useStyles'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
 import { addNoise } from './utils/utils'
+
+const PREFIX = 'App'
+
+const classes = {
+  root: `${PREFIX}-root`,
+  card: `${PREFIX}-card`,
+  options: `${PREFIX}-options`,
+  main: `${PREFIX}-main`,
+  controls: `${PREFIX}-controls`,
+  heatmap: `${PREFIX}-heatmap`,
+}
+
+const Root = styled('div')(({ theme }) => {
+  return {
+    [`&.${classes.root}`]: {
+      display: 'grid',
+      margin: 'auto',
+      gridTemplateAreas: `
+    "main"
+    "controls"
+    "options"
+    `,
+      [theme.breakpoints.up('md')]: {
+        gridTemplateColumns: '1fr auto 1fr',
+        gridTemplateAreas: `
+      "options main ."
+      "controls controls controls"
+      `,
+      },
+    },
+    [`& .${classes.card}`]: {
+      padding: theme.spacing(2),
+      textAlign: 'center',
+      margin: `${4}px ${theme.spacing()}`,
+    },
+    [`& .${classes.options}`]: {
+      gridArea: 'options',
+      [theme.breakpoints.down('md')]: {
+        display: 'flex',
+        placeItems: 'flex-end',
+        placeContent: 'flex-end',
+        justifyContent: 'space-between',
+      },
+    },
+    [`& .${classes.main}`]: {
+      gridArea: 'main',
+      display: 'grid',
+      justifyContent: 'center',
+    },
+    [`& .${classes.controls}`]: {
+      gridArea: 'controls',
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr',
+      paddingRight: theme.spacing(2),
+      gap: theme.spacing(),
+      alignItems: 'center',
+      '& canvas': {
+        display: 'block',
+      },
+    },
+    [`& .${classes.heatmap}`]: {
+      height: '90vmin',
+      maxWidth: '90vmin',
+      borderRadius: 4,
+      aspectRatio: '1',
+    },
+  }
+})
+
+const PADDING = 0.2
+
+export const getSize = () => {
+  let size = Math.min(window.innerWidth, window.innerHeight) / (1.5 + PADDING)
+  return { width: size, height: size }
+}
+
 // Add empty waveform
 
 const initialState = {
@@ -51,8 +128,6 @@ const App = () => {
 
   const [noiseMagnitude, setNoiseMagnitude] = useState(0.25)
 
-  const classes = useStyles({})
-
   React.useEffect(() => {
     setState({ timeSliderValue: time })
   }, [time, setState])
@@ -78,28 +153,16 @@ const App = () => {
     }
 
   return (
-    <div className={classes.root}>
-      {/* <AnimatedHeatmap
-        {...{
-          onClick: mainActionProps.onClick,
-          waveform,
-          noiseMagnitude,
-          time,
-          colorScale,
-        }}
-      /> */}
+    <Root className={classes.root}>
       <main className={classes.main}>
-        <Heatmap
-          className={classes.heatmap}
-          onClick={mainActionProps.onClick}
-          data={radial[waveform as keyof typeof radial]({
-            transform: addNoise(noiseMagnitude),
-            periods: 4,
-            size: 100,
+        <AnimatedHeatmap
+          {...{
+            onClick: mainActionProps.onClick,
+            waveform,
+            noiseMagnitude,
             time,
-          })}
-          time={time}
-          color={colorScales[colorScale as keyof typeof colorScales]}
+            colorScale,
+          }}
         />
       </main>
       <div className={classes.options}>
@@ -136,9 +199,8 @@ const App = () => {
         </Card>
       </div>
       <div className={classes.controls}>
-        <IconButton {...mainActionProps} />
+        <IconButton {...mainActionProps} size="large" />
         <Slider
-          className={classes.slider}
           defaultValue={0}
           valueLabelDisplay="auto"
           step={0.01}
@@ -152,7 +214,7 @@ const App = () => {
           }
         />
       </div>
-    </div>
+    </Root>
   )
 }
 

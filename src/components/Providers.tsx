@@ -1,37 +1,17 @@
-import { createTheme, CssBaseline } from '@material-ui/core'
-import red from '@material-ui/core/colors/red'
-import { ThemeProvider } from '@material-ui/styles'
-import React from 'react'
+import { createTheme, CssBaseline, Theme } from '@mui/material'
+import { red } from '@mui/material/colors'
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles'
 import App from '../App'
 
-const theme = createTheme({
-  palette: {
-    type: 'dark',
-    primary: red,
-    secondary: red,
-    background: {
-      default: '#22222a',
-    },
-  },
-  overrides: {
-    MuiFormLabel: {
-      // Name of the component ⚛️ / style sheet
-      root: {
-        // Name of the rule
-        '&$focused': {
-          // increase the specificity for the pseudo class
-          color: '#ffa',
-        },
-      },
-    },
-  },
-})
+const theme = createTheme({ palette: { mode: 'dark' } })
 
 const Providers = () => (
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <App />
-  </ThemeProvider>
+  <StyledEngineProvider injectFirst>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
+  </StyledEngineProvider>
 )
 
 export default Providers
