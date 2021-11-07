@@ -18,8 +18,8 @@ export const placeholderData = [
 ]
 
 export type Args = {
-  color?: (id: any) => any
-  data?: number[][]
+  colorScale?: (id: any) => any
+  pixelValues?: number[][]
   range?: {
     max?: number
     min?: number
@@ -27,21 +27,21 @@ export type Args = {
 }
 
 export function useValueToColor({
-  color = d3.interpolateHclLong('#012', '#ff6'),
-  data = placeholderData,
+  colorScale = d3.interpolateHclLong('#012', '#ff6'),
+  pixelValues = placeholderData,
   range: {
-    max = Math.max(...data.flat()),
-    min = Math.min(...data.flat()),
+    max = Math.max(...pixelValues.flat()),
+    min = Math.min(...pixelValues.flat()),
   } = {},
 }: Args = {}) {
   const colorize = toColorInterpolator((value) =>
-    color(normalize(max, min)(value)),
+    colorScale(normalize(max, min)(value)),
   )
-  return map2d(data, colorize)
+  return map2d(pixelValues, colorize)
 }
 export function useHardcodedValueToColor({
-  color = d3.interpolateHclLong('#012', '#ff6'),
-  data = placeholderData,
+  colorScale = d3.interpolateHclLong('#012', '#ff6'),
+  pixelValues = placeholderData,
 }: Args = {}) {
-  return map2d(data, toColorInterpolator(color))
+  return map2d(pixelValues, toColorInterpolator(colorScale))
 }
