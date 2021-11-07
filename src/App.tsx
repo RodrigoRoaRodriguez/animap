@@ -8,12 +8,10 @@ import { useState } from 'react'
 import create, { SetState } from 'zustand'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
-import Heatmap from './components/Heatmap'
 import { Picker } from './components/Picker'
 import { useAnimation } from './hooks/useAnimation'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
-import { addNoise } from './utils/utils'
 
 const PREFIX = 'App'
 
@@ -118,16 +116,13 @@ const App = () => {
         setTimeTo,
       }),
     )
+
+  const { waveform, colorScale, setState } = useAppStore()
+
   // Normalize, so time is on a scale from 0 to 1
   const time = Math.min(1, elapsed / duration)
 
-  const { waveform, colorScale, timeSliderValue, setState } = useAppStore()
-
   const [noiseMagnitude, setNoiseMagnitude] = useState(0.25)
-
-  React.useEffect(() => {
-    setState({ timeSliderValue: time })
-  }, [time, setState])
 
   let mainActionProps = {
     'aria-label': 'play',
@@ -177,11 +172,6 @@ const App = () => {
           />
         </Card>
         <Card className={join(classes.card, classes.options)}>
-          <Picker
-            title="Noise: "
-            values={[]}
-            onChange={(colorScale) => setState({ colorScale })}
-          />
           <Slider
             value={noiseMagnitude}
             onChange={(_, value) =>
@@ -201,10 +191,8 @@ const App = () => {
           valueLabelDisplay="auto"
           step={0.01}
           max={1}
-          value={timeSliderValue}
-          onChange={(_, value) =>
-            setState({ timeSliderValue: value as number })
-          }
+          value={time}
+          onChange={(_, value) => setTimeTo(value as number)}
           onChangeCommitted={(_: any, value: number | number[]) =>
             setTimeTo(value as number)
           }
