@@ -37,7 +37,7 @@ const Root = styled('div')(({ theme }) => {
     "options"
     `,
       [theme.breakpoints.up('md')]: {
-        gridTemplateColumns: '1fr auto 1fr',
+        gridTemplateColumns: 'auto 1fr',
         gridTemplateAreas: `
       "options main ."
       "controls controls controls"
@@ -58,11 +58,6 @@ const Root = styled('div')(({ theme }) => {
         justifyContent: 'space-between',
       },
     },
-    [`& .${classes.main}`]: {
-      gridArea: 'main',
-      display: 'grid',
-      justifyContent: 'center',
-    },
     [`& .${classes.controls}`]: {
       gridArea: 'controls',
       display: 'grid',
@@ -75,7 +70,9 @@ const Root = styled('div')(({ theme }) => {
       },
     },
     [`& .${classes.heatmap}`]: {
-      height: '90vmin',
+      border: 'solid 10px #222',
+      height: '100%',
+      width: '100%',
       maxWidth: '90vmin',
       borderRadius: 4,
       aspectRatio: '1',
@@ -154,17 +151,16 @@ const App = () => {
 
   return (
     <Root className={classes.root}>
-      <main className={classes.main}>
-        <AnimatedHeatmap
-          {...{
-            onClick: mainActionProps.onClick,
-            waveform,
-            noiseMagnitude,
-            time,
-            colorScale,
-          }}
-        />
-      </main>
+      <AnimatedHeatmap
+        {...{
+          onClick: mainActionProps.onClick,
+          waveform,
+          noiseMagnitude,
+          time,
+          colorScale,
+          className: classes.heatmap,
+        }}
+      />
       <div className={classes.options}>
         <Card className={classes.card}>
           <Picker
