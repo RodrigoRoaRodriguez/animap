@@ -184,7 +184,10 @@ const App = () => {
             )}
           />
         </Card>
-        <Card className={join(classes.card, classes.options)}>
+        <Card
+          sx={{ overflow: 'visible' }}
+          className={join(classes.card, classes.options)}
+        >
           <Slider
             value={noiseMagnitude}
             onChange={useCallback(
@@ -194,7 +197,7 @@ const App = () => {
             )}
             aria-labelledby="noise-magnitude"
             step={0.01}
-            max={3}
+            max={10}
             valueLabelDisplay="auto"
           />
         </Card>
