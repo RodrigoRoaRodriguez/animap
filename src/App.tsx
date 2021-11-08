@@ -1,10 +1,8 @@
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { Card, IconButton, Slider } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import * as React from 'react'
-import { useState } from 'react'
+import { Card, IconButton, Slider, styled } from '@mui/material'
+import { useCallback, useState } from 'react'
 import create, { SetState } from 'zustand'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
@@ -24,6 +22,7 @@ const classes = {
   heatmap: `${PREFIX}-heatmap`,
 }
 
+// todo remove transition from the slider
 const Root = styled('div')(({ theme }) => {
   return {
     [`&.${classes.root}`]: {
@@ -68,7 +67,15 @@ const Root = styled('div')(({ theme }) => {
       },
     },
     [`& .${classes.heatmap}`]: {
-      border: 'solid 10px #222',
+      placeSelf: 'center',
+      height: '100%',
+      width: '100%',
+      maxWidth: '90vmin',
+      borderRadius: 4,
+      aspectRatio: '1',
+    },
+    [`& .${classes.heatmap}`]: {
+      placeSelf: 'center',
       height: '100%',
       width: '100%',
       maxWidth: '90vmin',
@@ -117,7 +124,7 @@ const App = () => {
       }),
     )
 
-  const { waveform, colorScale, setState } = useAppStore()
+  const { waveform, colorScale } = useAppStore()
 
   // Normalize, so time is on a scale from 0 to 1
   const time = Math.min(1, elapsed / duration)
@@ -161,22 +168,30 @@ const App = () => {
           <Picker
             title="Waveform: "
             values={Object.keys(radial)}
-            onChange={(waveform) => setState({ waveform })}
+            onChange={useCallback(
+              (waveform) => useAppStore.setState({ waveform }),
+              [],
+            )}
           />
         </Card>
         <Card className={join(classes.card, classes.options)}>
           <Picker
             title="Set color scheme: "
             values={Object.keys(colorScales)}
-            onChange={(colorScale) => setState({ colorScale })}
+            onChange={useCallback(
+              (colorScale) => useAppStore.setState({ colorScale }),
+              [],
+            )}
           />
         </Card>
         <Card className={join(classes.card, classes.options)}>
           <Slider
             value={noiseMagnitude}
-            onChange={(_, value) =>
-              typeof value === 'number' && setNoiseMagnitude(value)
-            }
+            onChange={useCallback(
+              (_, value) =>
+                typeof value === 'number' && setNoiseMagnitude(value),
+              [],
+            )}
             aria-labelledby="noise-magnitude"
             step={0.01}
             max={3}
@@ -190,12 +205,22 @@ const App = () => {
           defaultValue={0}
           valueLabelDisplay="auto"
           step={0.01}
+          sx={{
+            '& .MuiSlider-track, & .MuiSlider-track, & .MuiSlider-mark, , & .MuiSlider-thumb':
+              {
+                transition: 'none',
+              },
+          }}
           max={1}
           value={time}
-          onChange={(_, value) => setTimeTo(value as number)}
-          onChangeCommitted={(_: any, value: number | number[]) =>
-            setTimeTo(value as number)
-          }
+          onChange={useCallback(
+            (_, value) => setTimeTo(value as number),
+            [setTimeTo],
+          )}
+          onChangeCommitted={useCallback(
+            (_: any, value: number | number[]) => setTimeTo(value as number),
+            [setTimeTo],
+          )}
         />
       </div>
     </Root>
