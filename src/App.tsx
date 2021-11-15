@@ -7,6 +7,7 @@ import create, { SetState } from 'zustand'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
 import { Picker } from './components/Picker'
+import { HideOptionsButton } from './HideOptionsButton'
 import { useAnimation } from './hooks/useAnimation'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
@@ -201,6 +202,7 @@ const App = () => {
             valueLabelDisplay="auto"
           />
         </Card>
+        <HideOptionsButton />
       </div>
       <div className={classes.controls}>
         <IconButton {...mainActionProps} size="large" />
