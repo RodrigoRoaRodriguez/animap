@@ -1,13 +1,21 @@
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { Card, IconButton, Slider, styled } from '@mui/material'
-import { useCallback, useState } from 'react'
-import create, { SetState } from 'zustand'
+import {
+  Card,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Slider,
+  styled,
+  Typography,
+} from '@mui/material'
+import { useCallback } from 'react'
+import create from 'zustand'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
 import { Picker } from './components/Picker'
-import { HideOptionsButton } from './HideOptionsButton'
+import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
 import { useAnimation } from './hooks/useAnimation'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
@@ -48,6 +56,7 @@ const Root = styled('div')(({ theme }) => {
       margin: `${4}px ${theme.spacing()}`,
     },
     [`& .${classes.options}`]: {
+      minWidth: '200px',
       gridArea: 'options',
       [theme.breakpoints.down('md')]: {
         display: 'flex',
@@ -102,14 +111,15 @@ const initialState = {
   noiseMagnitude: 0.25,
 }
 
-interface Actions {
-  setState: SetState<typeof initialState & Actions>
-}
+const useAppStore = create<typeof initialState>(() => ({ ...initialState }))
 
-const useAppStore = create<typeof initialState & Actions>((set) => ({
-  ...initialState,
-  setState: set,
-}))
+const setWaveform = (waveform: string) => useAppStore.setState({ waveform })
+const setColorScale = (colorScale: string) =>
+  useAppStore.setState({ colorScale })
+
+const setNoiseMagnitude = (_: unknown, noiseMagnitude: number | unknown) => {
+  typeof noiseMagnitude === 'number' && useAppStore.setState({ noiseMagnitude })
+}
 
 const App = () => {
   const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
@@ -125,12 +135,12 @@ const App = () => {
       }),
     )
 
-  const { waveform, colorScale } = useAppStore()
+  const { showOptions } = useHideOptionsStore()
+
+  const { waveform, colorScale, noiseMagnitude } = useAppStore()
 
   // Normalize, so time is on a scale from 0 to 1
   const time = Math.min(1, elapsed / duration)
-
-  const [noiseMagnitude, setNoiseMagnitude] = useState(0.25)
 
   let mainActionProps = {
     'aria-label': 'play',
@@ -165,43 +175,41 @@ const App = () => {
         }}
       />
       <div className={classes.options}>
-        <Card className={classes.card}>
-          <Picker
-            title="Waveform: "
-            values={Object.keys(radial)}
-            onChange={useCallback(
-              (waveform) => useAppStore.setState({ waveform }),
-              [],
-            )}
-          />
-        </Card>
-        <Card className={join(classes.card, classes.options)}>
-          <Picker
-            title="Set color scheme: "
-            values={Object.keys(colorScales)}
-            onChange={useCallback(
-              (colorScale) => useAppStore.setState({ colorScale }),
-              [],
-            )}
-          />
-        </Card>
-        <Card
-          sx={{ overflow: 'visible' }}
-          className={join(classes.card, classes.options)}
-        >
-          <Slider
-            value={noiseMagnitude}
-            onChange={useCallback(
-              (_, value) =>
-                typeof value === 'number' && setNoiseMagnitude(value),
-              [],
-            )}
-            aria-labelledby="noise-magnitude"
-            step={0.01}
-            max={10}
-            valueLabelDisplay="auto"
-          />
-        </Card>
+        {showOptions && (
+          <>
+            <Card className={classes.card}>
+              <Picker
+                title="Waveform: "
+                values={Object.keys(radial)}
+                onChange={setWaveform}
+              />
+            </Card>
+            <Card className={join(classes.card, classes.options)}>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Noise</FormLabel>
+                <Picker
+                  title="Color scheme: "
+                  values={Object.keys(colorScales)}
+                  onChange={setColorScale}
+                />
+              </FormControl>
+            </Card>
+            <Card
+              sx={{ overflow: 'visible' }}
+              className={join(classes.card, classes.options)}
+            >
+              <Typography>Noise</Typography>
+              <Slider
+                value={noiseMagnitude}
+                onChange={setNoiseMagnitude}
+                aria-labelledby="noise-magnitude"
+                step={0.01}
+                max={10}
+                valueLabelDisplay="auto"
+              />
+            </Card>
+          </>
+        )}
         <HideOptionsButton />
       </div>
       <div className={classes.controls}>

@@ -7,7 +7,7 @@ const initialState = {
   showOptions: true,
 }
 
-const useHideOptionsStore = create<typeof initialState>(() => ({
+export const useHideOptionsStore = create<typeof initialState>(() => ({
   ...initialState,
 }))
 
@@ -24,12 +24,12 @@ export function HideOptionsButton() {
         ? {
             onClick: hideOptions,
             startIcon: <VisibilityOffIcon />,
-            children: 'hide',
+            children: 'hide options',
           }
         : {
             onClick: showOptions,
             startIcon: <VisibilityIcon />,
-            children: 'show',
+            children: 'show options',
           })}
     />
   )
