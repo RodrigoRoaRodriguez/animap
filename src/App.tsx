@@ -1,21 +1,16 @@
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import {
-  Card,
-  FormControl,
-  FormLabel,
-  IconButton,
-  Slider,
-  styled,
-  Typography,
-} from '@mui/material'
+import { Card, FormLabel, IconButton, Slider, styled } from '@mui/material'
 import { useCallback } from 'react'
 import create from 'zustand'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
 import { colorScales } from './colorScales'
+import {
+  HideOptionsButton,
+  useHideOptionsStore,
+} from './components/HideOptionsButton'
 import { Picker } from './components/Picker'
-import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
 import { useAnimation } from './hooks/useAnimation'
 import { radial } from './utils/2dDataGenerators'
 import { join } from './utils/join'
@@ -179,26 +174,23 @@ const App = () => {
           <>
             <Card className={classes.card}>
               <Picker
-                title="Waveform: "
+                title="Waveform"
                 values={Object.keys(radial)}
                 onChange={setWaveform}
               />
             </Card>
             <Card className={join(classes.card, classes.options)}>
-              <FormControl component="fieldset">
-                <FormLabel component="legend">Noise</FormLabel>
-                <Picker
-                  title="Color scheme: "
-                  values={Object.keys(colorScales)}
-                  onChange={setColorScale}
-                />
-              </FormControl>
+              <Picker
+                title="Color scheme"
+                values={Object.keys(colorScales)}
+                onChange={setColorScale}
+              />
             </Card>
             <Card
               sx={{ overflow: 'visible' }}
               className={join(classes.card, classes.options)}
             >
-              <Typography>Noise</Typography>
+              <FormLabel component="legend">Noise</FormLabel>
               <Slider
                 value={noiseMagnitude}
                 onChange={setNoiseMagnitude}

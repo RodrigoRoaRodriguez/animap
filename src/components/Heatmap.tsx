@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useHardcodedValueToColor } from '../hooks/useValueToColor'
-import Texture from '../Texture'
+import Texture from '../utils/Texture'
 
 interface OwnProps {
   pixelValues: number[][]
