@@ -1,7 +1,7 @@
-import { colorScales } from './colorScales'
-import Heatmap from './components/Heatmap'
-import { radial } from './utils/2dDataGenerators'
-import { addNoise } from './utils/utils'
+import { radial } from '../utils/2dDataGenerators'
+import { colorScales } from '../utils/colorScales'
+import { addNoise } from '../utils/utils'
+import Heatmap from './Heatmap'
 
 interface Props {
   onClick: any

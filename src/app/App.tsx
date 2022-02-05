@@ -4,16 +4,16 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import { Card, FormLabel, IconButton, Slider, styled } from '@mui/material'
 import { useCallback } from 'react'
 import create from 'zustand'
-import { AnimatedHeatmap } from './AnimatedHeatmap'
-import { colorScales } from './colorScales'
+import { AnimatedHeatmap } from '../components/AnimatedHeatmap'
 import {
   HideOptionsButton,
   useHideOptionsStore,
-} from './components/HideOptionsButton'
-import { Picker } from './components/Picker'
-import { useAnimation } from './hooks/useAnimation'
-import { radial } from './utils/2dDataGenerators'
-import { join } from './utils/join'
+} from '../components/HideOptionsButton'
+import { Picker } from '../components/Picker'
+import { useAnimation } from '../hooks/useAnimation'
+import { radial } from '../utils/2dDataGenerators'
+import { colorScales } from '../utils/colorScales'
+import { join } from '../utils/join'
 
 const PREFIX = 'App'
 
@@ -223,7 +223,8 @@ const App = () => {
             [setTimeTo],
           )}
           onChangeCommitted={useCallback(
-            (_: any, value: number | number[]) => setTimeTo(value as number),
+            (_: unknown, value: number | number[]) =>
+              setTimeTo(value as number),
             [setTimeTo],
           )}
         />
