@@ -1,6 +1,6 @@
-import { createTheme, CssBaseline, Theme } from '@mui/material'
+import { createTheme, CssBaseline } from '@mui/material'
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles'
-import App from '../app/App'
+import App from './App'
 
 const theme = createTheme({ palette: { mode: 'dark' } })
 

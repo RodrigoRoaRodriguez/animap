@@ -4,21 +4,17 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import { Card, FormLabel, IconButton, Slider, styled } from '@mui/material'
 import { useCallback } from 'react'
 import create from 'zustand'
-import { AnimatedHeatmap } from '../components/AnimatedHeatmap'
-import {
-  HideOptionsButton,
-  useHideOptionsStore,
-} from '../components/HideOptionsButton'
-import { Picker } from '../components/Picker'
-import { useAnimation } from '../hooks/useAnimation'
+import { useAnimationLoop, useAnimationStore } from '../hooks/useAnimation'
 import { radial } from '../utils/2dDataGenerators'
 import { colorScales } from '../utils/colorScales'
 import { join } from '../utils/join'
+import { AnimatedHeatmap } from './AnimatedHeatmap'
+import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
+import { Picker } from './Picker'
 
 const PREFIX = 'App'
 
 const classes = {
-  root: `${PREFIX}-root`,
   card: `${PREFIX}-card`,
   options: `${PREFIX}-options`,
   main: `${PREFIX}-main`,
@@ -29,21 +25,19 @@ const classes = {
 // todo remove transition from the slider
 const Root = styled('div')(({ theme }) => {
   return {
-    [`&.${classes.root}`]: {
-      display: 'grid',
-      margin: 'auto',
-      gridTemplateAreas: `
+    display: 'grid',
+    margin: 'auto',
+    gridTemplateAreas: `
     "main"
     "controls"
     "options"
     `,
-      [theme.breakpoints.up('md')]: {
-        gridTemplateColumns: 'auto 1fr',
-        gridTemplateAreas: `
+    [theme.breakpoints.up('md')]: {
+      gridTemplateColumns: 'auto 1fr',
+      gridTemplateAreas: `
       "options main ."
       "controls controls controls"
       `,
-      },
     },
     [`& .${classes.card}`]: {
       padding: theme.spacing(2),
@@ -83,7 +77,8 @@ const Root = styled('div')(({ theme }) => {
       placeSelf: 'center',
       height: '100%',
       width: '100%',
-      maxWidth: '90vmin',
+      maxHeight: '90vh',
+      maxWidth: '90vh',
       borderRadius: 4,
       aspectRatio: '1',
     },
@@ -117,8 +112,9 @@ const setNoiseMagnitude = (_: unknown, noiseMagnitude: number | unknown) => {
 }
 
 const App = () => {
+  useAnimationLoop()
   const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
-    useAnimation(
+    useAnimationStore(
       ({ duration, elapsed, pause, play, playing, replay, setTimeTo }) => ({
         duration,
         elapsed,
@@ -157,8 +153,13 @@ const App = () => {
       children: <RefreshIcon />,
     }
 
+  const setTime = useCallback(
+    ({}, value: number | number[]) => setTimeTo(value as number),
+    [setTimeTo],
+  )
+
   return (
-    <Root className={classes.root}>
+    <Root>
       <AnimatedHeatmap
         {...{
           onClick: mainActionProps.onClick,
@@ -218,15 +219,8 @@ const App = () => {
           }}
           max={1}
           value={time}
-          onChange={useCallback(
-            (_, value) => setTimeTo(value as number),
-            [setTimeTo],
-          )}
-          onChangeCommitted={useCallback(
-            (_: unknown, value: number | number[]) =>
-              setTimeTo(value as number),
-            [setTimeTo],
-          )}
+          onChange={setTime}
+          onChangeCommitted={setTime}
         />
       </div>
     </Root>

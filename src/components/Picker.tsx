@@ -17,9 +17,10 @@ export function Picker({
   values,
   defaultValue = values[0],
 }: Props) {
-  const forwardValue = useCallback((_, value: string) => onChange(value), [
-    onChange,
-  ])
+  const forwardValue = useCallback(
+    ({}, value: string) => onChange(value),
+    [onChange],
+  )
   return (
     <FormControl component="fieldset">
       <FormLabel component="legend">{title}</FormLabel>

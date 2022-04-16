@@ -51,13 +51,11 @@ export const useAnimationStore = create<AnimationState>((set, get) => ({
 
 const pickLoop = ({ loop }: AnimationState): (() => void) => loop
 const pickPlaying = ({ playing }: AnimationState): boolean => playing
-// Hook
-export function useAnimation(fn: StateSelector<AnimationState, any>) {
+/**
+ * Hook to start the animation loop.
+ */
+export function useAnimationLoop() {
   const loop = useAnimationStore(pickLoop)
   const playing = useAnimationStore(pickPlaying)
-
   useEffect(loop, [playing, loop])
-
-  // Return altered value based on our specified easing function
-  return useAnimationStore(fn)
 }
