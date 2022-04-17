@@ -1,9 +1,5 @@
 module.exports = {
-  overrides: [
-    {
-      rules: {
-        'no-empty-pattern': 'off',
-      },
-    },
-  ],
+  rules: {
+    'no-empty-pattern': 'off',
+  },
 }
