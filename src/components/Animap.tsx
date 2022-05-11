@@ -9,7 +9,6 @@ import { radial } from '../utils/2dDataGenerators'
 import { colorScales } from '../utils/colorScales'
 import { join } from '../utils/join'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
-import { Blog } from './Blog'
 import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
 import { Picker } from './Picker'
 
@@ -161,9 +160,6 @@ const App = () => {
 
   return (
     <Root>
-      <div>
-        <Blog></Blog>
-      </div>
       <AnimatedHeatmap
         {...{
           onClick: mainActionProps.onClick,
