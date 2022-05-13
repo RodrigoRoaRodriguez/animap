@@ -164,17 +164,6 @@ export default App
 
 function AnimatedHeatmap() {
   useAnimationLoop()
-  const { duration, elapsed, pause, play, playing, replay } = useAnimationStore(
-    ({ duration, elapsed, pause, play, playing, replay }) => ({
-      duration,
-      elapsed,
-      pause,
-      play,
-      playing,
-      replay,
-    }),
-  )
-
   const { waveform, colorScale, noiseMagnitude } = useAppStore()
   const timeValues = useMemo(
     () =>
@@ -189,28 +178,7 @@ function AnimatedHeatmap() {
     [waveform, noiseMagnitude],
   )
 
-  // Normalize, so time is on a scale from 0 to 1
-  const time = Math.min(1, elapsed / duration)
-
-  let mainActionProps = {
-    'aria-label': 'play',
-    onClick: play,
-    children: <PlayArrow />,
-  }
-
-  if (playing)
-    mainActionProps = {
-      'aria-label': 'pause',
-      onClick: pause,
-      children: <PauseIcon />,
-    }
-
-  if (time >= 1)
-    mainActionProps = {
-      'aria-label': 'replay',
-      onClick: replay,
-      children: <RefreshIcon />,
-    }
+  const { mainActionProps, time } = useAnimationControls()
 
   return (
     <Heatmap
@@ -223,40 +191,8 @@ function AnimatedHeatmap() {
 }
 
 const PlayerControls = () => {
-  const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
-    useAnimationStore(
-      ({ duration, elapsed, pause, play, playing, replay, setTimeTo }) => ({
-        duration,
-        elapsed,
-        pause,
-        play,
-        playing,
-        replay,
-        setTimeTo,
-      }),
-    )
-  // Normalize, so time is on a scale from 0 to 1
-  const time = Math.min(1, elapsed / duration)
-
-  let mainActionProps = {
-    'aria-label': 'play',
-    onClick: play,
-    children: <PlayArrow />,
-  }
-
-  if (playing)
-    mainActionProps = {
-      'aria-label': 'pause',
-      onClick: pause,
-      children: <PauseIcon />,
-    }
-
-  if (time >= 1)
-    mainActionProps = {
-      'aria-label': 'replay',
-      onClick: replay,
-      children: <RefreshIcon />,
-    }
+  const { setTimeTo } = useAnimationStore(({ setTimeTo }) => ({ setTimeTo }))
+  const { mainActionProps, time } = useAnimationControls()
   const setTime = useCallback(
     ({}, value: number | number[]) => setTimeTo(value as number),
     [setTimeTo],
@@ -281,4 +217,40 @@ const PlayerControls = () => {
       />
     </div>
   )
+}
+
+function useAnimationControls() {
+  const { duration, elapsed, pause, play, playing, replay } = useAnimationStore(
+    ({ duration, elapsed, pause, play, playing, replay }) => ({
+      duration,
+      elapsed,
+      pause,
+      play,
+      playing,
+      replay,
+    }),
+  )
+  // Normalize, so time is on a scale from 0 to 1
+  const time = Math.min(1, elapsed / duration)
+  let mainActionProps = {
+    'aria-label': 'play',
+    onClick: play,
+    children: <PlayArrow />,
+  }
+
+  if (playing)
+    mainActionProps = {
+      'aria-label': 'pause',
+      onClick: pause,
+      children: <PauseIcon />,
+    }
+
+  if (time >= 1)
+    mainActionProps = {
+      'aria-label': 'replay',
+      onClick: replay,
+      children: <RefreshIcon />,
+    }
+
+  return { mainActionProps, time }
 }
