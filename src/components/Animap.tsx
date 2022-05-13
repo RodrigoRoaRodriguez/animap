@@ -8,7 +8,9 @@ import { useAnimationLoop, useAnimationStore } from '../hooks/useAnimation'
 import { radial } from '../utils/2dDataGenerators'
 import { colorScales } from '../utils/colorScales'
 import { join } from '../utils/join'
+import { addNoise } from '../utils/utils'
 import { AnimatedHeatmap } from './AnimatedHeatmap'
+import Heatmap from './Heatmap'
 import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
 import { Picker } from './Picker'
 
@@ -160,15 +162,17 @@ const App = () => {
 
   return (
     <Root>
-      <AnimatedHeatmap
-        {...{
-          onClick: mainActionProps.onClick,
-          waveform,
-          noiseMagnitude,
+      <Heatmap
+        onClick={mainActionProps.onClick}
+        pixelValues={radial[waveform as keyof typeof radial]({
+          transform: addNoise(noiseMagnitude),
+          periods: 4,
+          size: 100,
           time,
-          colorScale,
-          className: classes.heatmap,
-        }}
+        })}
+        className={classes.heatmap}
+        time={time}
+        colorScale={colorScales[colorScale as keyof typeof colorScales]}
       />
       <div className={classes.options}>
         {showOptions && (
