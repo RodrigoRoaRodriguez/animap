@@ -1,5 +1,6 @@
-import { render } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import Providers from './components/Providers'
+const container = document.getElementById('root')
 
-const rootElement = document.getElementById('root')
-render(<Providers />, rootElement)
+const root = createRoot(container!)
+root.render(<Providers />)
