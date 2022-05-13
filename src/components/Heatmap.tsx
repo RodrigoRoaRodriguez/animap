@@ -6,7 +6,6 @@ interface OwnProps {
   pixelValues: number[][]
   range?: { max: number; min: number }
   colorScale: (value: number) => string
-  time: number
 }
 
 type Props = Omit<React.HTMLProps<HTMLCanvasElement>, keyof OwnProps> & OwnProps

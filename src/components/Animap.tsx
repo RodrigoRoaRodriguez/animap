@@ -112,77 +112,14 @@ const setNoiseMagnitude = (_: unknown, noiseMagnitude: number | unknown) => {
   typeof noiseMagnitude === 'number' && useAppStore.setState({ noiseMagnitude })
 }
 
-const thousandRange = [...Array(1000).keys()]
-
 const App = () => {
-  useAnimationLoop()
-  const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
-    useAnimationStore(
-      ({ duration, elapsed, pause, play, playing, replay, setTimeTo }) => ({
-        duration,
-        elapsed,
-        pause,
-        play,
-        playing,
-        replay,
-        setTimeTo,
-      }),
-    )
-
   const { showOptions } = useHideOptionsStore()
 
-  const { waveform, colorScale, noiseMagnitude } = useAppStore()
-
-  // Normalize, so time is on a scale from 0 to 1
-  const time = Math.min(1, elapsed / duration)
-
-  let mainActionProps = {
-    'aria-label': 'play',
-    onClick: play,
-    children: <PlayArrow />,
-  }
-
-  if (playing)
-    mainActionProps = {
-      'aria-label': 'pause',
-      onClick: pause,
-      children: <PauseIcon />,
-    }
-
-  if (time >= 1)
-    mainActionProps = {
-      'aria-label': 'replay',
-      onClick: replay,
-      children: <RefreshIcon />,
-    }
-
-  const setTime = useCallback(
-    ({}, value: number | number[]) => setTimeTo(value as number),
-    [setTimeTo],
-  )
-
-  const timeValues = useMemo(
-    () =>
-      thousandRange.map((time) =>
-        radial[waveform as keyof typeof radial]({
-          transform: addNoise(noiseMagnitude),
-          periods: 4,
-          size: 100,
-          time: time / 1000,
-        }),
-      ),
-    [waveform, noiseMagnitude],
-  )
+  const { noiseMagnitude } = useAppStore()
 
   return (
     <Root>
-      <Heatmap
-        onClick={mainActionProps.onClick}
-        pixelValues={timeValues[Math.floor(time * (timeValues.length - 1))]}
-        className={classes.heatmap}
-        time={time}
-        colorScale={colorScales[colorScale as keyof typeof colorScales]}
-      />
+      <AnimatedHeatmap />
       <div className={classes.options}>
         {showOptions && (
           <>
@@ -218,26 +155,130 @@ const App = () => {
         )}
         <HideOptionsButton />
       </div>
-      <div className={classes.controls}>
-        <IconButton {...mainActionProps} size="large" />
-        <Slider
-          defaultValue={0}
-          valueLabelDisplay="auto"
-          step={0.01}
-          sx={{
-            '& .MuiSlider-track, & .MuiSlider-track, & .MuiSlider-mark, , & .MuiSlider-thumb':
-              {
-                transition: 'none',
-              },
-          }}
-          max={1}
-          value={time}
-          onChange={setTime}
-          onChangeCommitted={setTime}
-        />
-      </div>
+      <PlayerControls />
     </Root>
   )
 }
 
 export default App
+
+function AnimatedHeatmap() {
+  useAnimationLoop()
+  const { duration, elapsed, pause, play, playing, replay } = useAnimationStore(
+    ({ duration, elapsed, pause, play, playing, replay }) => ({
+      duration,
+      elapsed,
+      pause,
+      play,
+      playing,
+      replay,
+    }),
+  )
+
+  const { waveform, colorScale, noiseMagnitude } = useAppStore()
+  const timeValues = useMemo(
+    () =>
+      [...Array(1000).keys()].map((time) =>
+        radial[waveform as keyof typeof radial]({
+          transform: addNoise(noiseMagnitude),
+          periods: 4,
+          size: 100,
+          time: time / 1000,
+        }),
+      ),
+    [waveform, noiseMagnitude],
+  )
+
+  // Normalize, so time is on a scale from 0 to 1
+  const time = Math.min(1, elapsed / duration)
+
+  let mainActionProps = {
+    'aria-label': 'play',
+    onClick: play,
+    children: <PlayArrow />,
+  }
+
+  if (playing)
+    mainActionProps = {
+      'aria-label': 'pause',
+      onClick: pause,
+      children: <PauseIcon />,
+    }
+
+  if (time >= 1)
+    mainActionProps = {
+      'aria-label': 'replay',
+      onClick: replay,
+      children: <RefreshIcon />,
+    }
+
+  return (
+    <Heatmap
+      onClick={mainActionProps.onClick}
+      pixelValues={timeValues[Math.floor(time * (timeValues.length - 1))]}
+      className={classes.heatmap}
+      colorScale={colorScales[colorScale as keyof typeof colorScales]}
+    />
+  )
+}
+
+const PlayerControls = () => {
+  const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
+    useAnimationStore(
+      ({ duration, elapsed, pause, play, playing, replay, setTimeTo }) => ({
+        duration,
+        elapsed,
+        pause,
+        play,
+        playing,
+        replay,
+        setTimeTo,
+      }),
+    )
+  // Normalize, so time is on a scale from 0 to 1
+  const time = Math.min(1, elapsed / duration)
+
+  let mainActionProps = {
+    'aria-label': 'play',
+    onClick: play,
+    children: <PlayArrow />,
+  }
+
+  if (playing)
+    mainActionProps = {
+      'aria-label': 'pause',
+      onClick: pause,
+      children: <PauseIcon />,
+    }
+
+  if (time >= 1)
+    mainActionProps = {
+      'aria-label': 'replay',
+      onClick: replay,
+      children: <RefreshIcon />,
+    }
+  const setTime = useCallback(
+    ({}, value: number | number[]) => setTimeTo(value as number),
+    [setTimeTo],
+  )
+  return (
+    <div className={classes.controls}>
+      <IconButton {...mainActionProps} size="large" />
+      <Slider
+        defaultValue={0}
+        valueLabelDisplay="auto"
+        step={0.01}
+        sx={{
+          '& .MuiSlider-track, & .MuiSlider-track, & .MuiSlider-mark, , & .MuiSlider-thumb':
+            {
+              transition: 'none',
+            },
+        }}
+        max={1}
+        value={time}
+        onChange={setTime}
+        onChangeCommitted={setTime}
+      />
+    </div>
+  )
+}
