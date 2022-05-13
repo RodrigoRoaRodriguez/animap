@@ -2,14 +2,13 @@ import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import { Card, FormLabel, IconButton, Slider, styled } from '@mui/material'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import create from 'zustand'
 import { useAnimationLoop, useAnimationStore } from '../hooks/useAnimation'
 import { radial } from '../utils/2dDataGenerators'
 import { colorScales } from '../utils/colorScales'
 import { join } from '../utils/join'
 import { addNoise } from '../utils/utils'
-import { AnimatedHeatmap } from './AnimatedHeatmap'
 import Heatmap from './Heatmap'
 import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
 import { Picker } from './Picker'
@@ -113,6 +112,8 @@ const setNoiseMagnitude = (_: unknown, noiseMagnitude: number | unknown) => {
   typeof noiseMagnitude === 'number' && useAppStore.setState({ noiseMagnitude })
 }
 
+const thousandRange = [...Array(1000).keys()]
+
 const App = () => {
   useAnimationLoop()
   const { duration, elapsed, pause, play, playing, replay, setTimeTo } =
@@ -160,16 +161,24 @@ const App = () => {
     [setTimeTo],
   )
 
+  const timeValues = useMemo(
+    () =>
+      thousandRange.map((time) =>
+        radial[waveform as keyof typeof radial]({
+          transform: addNoise(noiseMagnitude),
+          periods: 4,
+          size: 100,
+          time: time / 1000,
+        }),
+      ),
+    [waveform, noiseMagnitude],
+  )
+
   return (
     <Root>
       <Heatmap
         onClick={mainActionProps.onClick}
-        pixelValues={radial[waveform as keyof typeof radial]({
-          transform: addNoise(noiseMagnitude),
-          periods: 4,
-          size: 100,
-          time,
-        })}
+        pixelValues={timeValues[Math.floor(time * (timeValues.length - 1))]}
         className={classes.heatmap}
         time={time}
         colorScale={colorScales[colorScale as keyof typeof colorScales]}
