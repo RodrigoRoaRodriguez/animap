@@ -2,9 +2,9 @@ import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
 import Radio from '@mui/material/Radio'
-import RadioGroup from '@mui/material/RadioGroup'
+import RadioGroup, { RadioGroupProps } from '@mui/material/RadioGroup'
 import React, { useCallback } from 'react'
-interface Props {
+interface Props extends Omit<RadioGroupProps, 'onChange'> {
   onChange: (value: string) => void
   title: string
   values: string[]
@@ -16,6 +16,7 @@ export function Picker({
   title,
   values,
   defaultValue = values[0],
+  ...radioGroupProps
 }: Props) {
   const forwardValue = useCallback(
     ({}, value: string) => onChange(value),
@@ -24,7 +25,11 @@ export function Picker({
   return (
     <FormControl component="fieldset">
       <FormLabel component="legend">{title}</FormLabel>
-      <RadioGroup defaultValue={defaultValue} onChange={forwardValue}>
+      <RadioGroup
+        onChange={forwardValue}
+        defaultValue={defaultValue}
+        {...radioGroupProps}
+      >
         {values.map((value) => (
           <FormControlLabel
             key={value}

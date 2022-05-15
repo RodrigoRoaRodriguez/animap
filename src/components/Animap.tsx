@@ -115,7 +115,7 @@ const setNoiseMagnitude = (_: unknown, noiseMagnitude: number | unknown) => {
 
 const App = () => {
   const { showOptions } = useHideOptionsStore()
-  const { noiseMagnitude } = useAppStore()
+  const { noiseMagnitude, colorScale, waveform } = useAppStore()
 
   return (
     <Root>
@@ -128,6 +128,7 @@ const App = () => {
                 title="Waveform"
                 values={Object.keys(waveforms)}
                 onChange={setWaveform}
+                value={waveform}
               />
             </Card>
             <Card className={join(classes.card, classes.options)}>
@@ -135,6 +136,7 @@ const App = () => {
                 title="Color scheme"
                 values={Object.keys(colorScales)}
                 onChange={setColorScale}
+                value={colorScale}
               />
             </Card>
             <Card
