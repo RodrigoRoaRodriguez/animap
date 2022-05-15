@@ -6,13 +6,13 @@ import { useCallback, useMemo } from 'react'
 import create from 'zustand'
 import { useAnimationLoop, useAnimationStore } from '../hooks/useAnimation'
 import { toColorInterpolator } from '../hooks/useValueToColor'
-import { radial } from '../utils/2dDataGenerators'
+import { radialWaveform } from '../utils/2dDataGenerators'
 import { map2d } from '../utils/array'
 import { colorScales } from '../utils/colorScales'
 import { join } from '../utils/join'
 import Texture from '../utils/Texture'
 import { addNoise } from '../utils/utils'
-import Heatmap from './Heatmap'
+import * as waveforms from '../utils/Waveform'
 import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
 import { Picker } from './Picker'
 
@@ -96,10 +96,8 @@ export const getSize = () => {
   return { width: size, height: size }
 }
 
-// Add empty waveform
-
 const initialState = {
-  waveform: Object.keys(radial)[0],
+  waveform: Object.keys(waveforms)[0],
   colorScale: Object.keys(colorScales)[0],
   timeSliderValue: 0,
   noiseMagnitude: 0.25,
@@ -117,7 +115,6 @@ const setNoiseMagnitude = (_: unknown, noiseMagnitude: number | unknown) => {
 
 const App = () => {
   const { showOptions } = useHideOptionsStore()
-
   const { noiseMagnitude } = useAppStore()
 
   return (
@@ -129,7 +126,7 @@ const App = () => {
             <Card className={classes.card}>
               <Picker
                 title="Waveform"
-                values={Object.keys(radial)}
+                values={Object.keys(waveforms)}
                 onChange={setWaveform}
               />
             </Card>
@@ -173,7 +170,7 @@ function AnimatedHeatmap() {
   return (
     <Texture
       pixels={map2d(
-        radial[waveform as keyof typeof radial]({
+        radialWaveform(waveforms[waveform as keyof typeof waveforms])({
           transform: addNoise(noiseMagnitude),
           periods: 4,
           size: 100,

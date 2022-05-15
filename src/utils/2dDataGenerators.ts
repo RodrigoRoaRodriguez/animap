@@ -1,14 +1,14 @@
 // Regl Textures: https://github.com/regl-project/regl/blob/master/API.md#textures
 import { make2d, map2d } from './array'
 import { Coords } from './Coords'
-import { none, sawtooth, sine, square, triangle, Waveform } from './Waveform'
+import { Waveform } from './Waveform'
 
 /**
- * Radially maps a Waveform function over a square matrix
+ * Maps a waveform over a square matrix via an x,y to value function.
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const matrixMap2d =
-  (valueFn: (xy: Coords, size: number) => number) =>
+export const matrixMap2d =
+  (xyToValueFn: (xy: Coords, size: number) => number) =>
   (waveform: Waveform) =>
   ({
     size = 50,
@@ -18,7 +18,11 @@ const matrixMap2d =
   } = {}) =>
     map2d(make2d(size), (_, coords) =>
       transform(
-        waveform({ periods, size, value: time * size + valueFn(coords, size) }),
+        waveform({
+          periods,
+          size,
+          value: time * size + xyToValueFn(coords, size),
+        }),
         coords,
         time,
         size,
@@ -29,22 +33,17 @@ const matrixMap2d =
  * Measures Euclidean distance between the center of the chart and a coordianate
  * (x,y), assuming integer non-normalized device coordinates from 0 to size.
  * @param coords 2d coordinates
- * @param size length of the coordin
+ * @param size length of the coordinate system
  */
-const byDistance = ({ x, y }: Coords, size = 1) =>
+const byDistanceFromCenter = ({ x, y }: Coords, size = 1) =>
   Math.sqrt((x - (size - 1) / 2) ** 2 + (y - (size - 1) / 2) ** 2)
+
+const byHorizontalDistance = ({ x, y }: Coords) => x
+const byVerticalDistance = ({ x, y }: Coords) => y
 
 /**
  * Radially maps a Waveform function over a square matrix
  * @param waveform function mapped over the matrix to describe the graph shape
  */
-const radialMap = matrixMap2d(byDistance)
-
-export const radial = {
-  // gauss: radialMap(gauss),
-  sawtooth: radialMap(sawtooth),
-  sine: radialMap(sine),
-  square: radialMap(square),
-  triangle: radialMap(triangle),
-  none: radialMap(none),
-} as const
+// export const radialWaveform = matrixMap2d(byDistanceFromCenter)
+export const radialWaveform = matrixMap2d(byDistanceFromCenter)
