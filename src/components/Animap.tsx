@@ -5,9 +5,12 @@ import { Card, FormLabel, IconButton, Slider, styled } from '@mui/material'
 import { useCallback, useMemo } from 'react'
 import create from 'zustand'
 import { useAnimationLoop, useAnimationStore } from '../hooks/useAnimation'
+import { toColorInterpolator } from '../hooks/useValueToColor'
 import { radial } from '../utils/2dDataGenerators'
+import { map2d } from '../utils/array'
 import { colorScales } from '../utils/colorScales'
 import { join } from '../utils/join'
+import Texture from '../utils/Texture'
 import { addNoise } from '../utils/utils'
 import Heatmap from './Heatmap'
 import { HideOptionsButton, useHideOptionsStore } from './HideOptionsButton'
@@ -165,27 +168,23 @@ export default App
 function AnimatedHeatmap() {
   useAnimationLoop()
   const { waveform, colorScale, noiseMagnitude } = useAppStore()
-  const timeValues = useMemo(
-    () =>
-      [...Array(1000).keys()].map((time) =>
+  const { mainActionProps, time } = useAnimationControls()
+
+  return (
+    <Texture
+      pixels={map2d(
         radial[waveform as keyof typeof radial]({
           transform: addNoise(noiseMagnitude),
           periods: 4,
           size: 100,
-          time: time / 1000,
+          time,
         }),
-      ),
-    [waveform, noiseMagnitude],
-  )
-
-  const { mainActionProps, time } = useAnimationControls()
-
-  return (
-    <Heatmap
+        toColorInterpolator(
+          colorScales[colorScale as keyof typeof colorScales],
+        ),
+      )}
       onClick={mainActionProps.onClick}
-      pixelValues={timeValues[Math.floor(time * (timeValues.length - 1))]}
       className={classes.heatmap}
-      colorScale={colorScales[colorScale as keyof typeof colorScales]}
     />
   )
 }
