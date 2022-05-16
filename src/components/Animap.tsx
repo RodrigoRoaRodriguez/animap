@@ -1,9 +1,17 @@
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import RefreshIcon from '@mui/icons-material/Refresh'
-import { Card, FormLabel, IconButton, Slider, styled } from '@mui/material'
-import { useCallback, useMemo } from 'react'
+import {
+  Button,
+  Card,
+  FormLabel,
+  IconButton,
+  Slider,
+  styled,
+} from '@mui/material'
+import { useCallback } from 'react'
 import create from 'zustand'
+import { ReactComponent as Logo } from '../assets/animap-logo.svg'
 import { useAnimationLoop, useAnimationStore } from '../hooks/useAnimation'
 import { toColorInterpolator } from '../hooks/useValueToColor'
 import { radialWaveform } from '../utils/2dDataGenerators'
@@ -121,6 +129,10 @@ const App = () => {
     <Root>
       <AnimatedHeatmap />
       <div className={classes.options}>
+        {/* <Card className={classes.card}> */}
+        <Logo />
+        {/* <Button>Blog</Button> */}
+        {/* </Card> */}
         {showOptions && (
           <>
             <Card className={classes.card}>
