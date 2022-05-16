@@ -38,14 +38,15 @@ const classes = {
 const Root = styled('div')(({ theme }) => {
   return {
     display: 'grid',
+    maxWidth: 'calc(95vmin + 200px)',
     margin: 'auto',
     gridTemplateAreas: `
     "main"
     "controls"
     "options"
     `,
-    [theme.breakpoints.up('md')]: {
-      gridTemplateColumns: 'auto 1fr',
+    [theme.breakpoints.up('lg')]: {
+      gridTemplateColumns: '1fr auto',
       gridTemplateAreas: `
       "options main ."
       "controls controls controls"
@@ -63,7 +64,9 @@ const Root = styled('div')(({ theme }) => {
       gridArea: 'options',
       alignItems: 'start',
       alignContent: 'flex-start',
-      maxWidth: '100vw',
+      [theme.breakpoints.up('lg')]: {
+        maxWidth: '250px',
+      },
     },
     [`& .${classes.controls}`]: {
       gridArea: 'controls',
@@ -78,18 +81,8 @@ const Root = styled('div')(({ theme }) => {
     },
     [`& .${classes.heatmap}`]: {
       placeSelf: 'center',
-      height: '100%',
-      width: '100%',
-      maxWidth: '90vmin',
-      borderRadius: 4,
-      aspectRatio: '1',
-    },
-    [`& .${classes.heatmap}`]: {
-      placeSelf: 'center',
-      height: '100%',
-      width: '100%',
-      maxHeight: '90vh',
-      maxWidth: '90vh',
+      height: '95vmin',
+      width: '95vmin',
       borderRadius: 4,
       aspectRatio: '1',
     },
@@ -130,8 +123,14 @@ const App = () => {
       <div className={classes.options}>
         <Card className={classes.card}>
           <Logo />
-          {/* <Button>Blog</Button> */}
         </Card>
+        <Button variant="outlined" sx={{ margin: '0' }}>
+          Blog
+        </Button>
+        <Button variant="outlined" sx={{ margin: '0' }}>
+          GitHub
+        </Button>
+        <HideOptionsButton />
         {showOptions && (
           <>
             <Card className={classes.card}>
@@ -163,7 +162,6 @@ const App = () => {
             </Card>
           </>
         )}
-        <HideOptionsButton />
       </div>
       <PlayerControls />
     </Root>

@@ -34,7 +34,7 @@ export function Picker({
           <FormControlLabel
             key={value}
             value={value}
-            control={<Radio />}
+            control={<Radio size="small" />}
             label={value}
           />
         ))}

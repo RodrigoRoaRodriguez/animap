@@ -18,7 +18,7 @@ export function HideOptionsButton() {
   return (
     <Button
       variant="contained"
-      sx={{ margin: '0', width: '100%' }}
+      sx={{ margin: '0' }}
       {...(useHideOptionsStore().showOptions
         ? {
             onClick: hideOptions,
