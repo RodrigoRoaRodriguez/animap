@@ -1,3 +1,5 @@
+import BookIcon from '@mui/icons-material/Book'
+import GitHubIcon from '@mui/icons-material/GitHub'
 import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrow from '@mui/icons-material/PlayArrow'
 import RefreshIcon from '@mui/icons-material/Refresh'
@@ -17,7 +19,6 @@ import { toColorInterpolator } from '../hooks/useValueToColor'
 import { radialWaveform } from '../utils/2dDataGenerators'
 import { map2d } from '../utils/array'
 import { colorScales } from '../utils/colorScales'
-import { join } from '../utils/join'
 import Texture from '../utils/Texture'
 import { addNoise } from '../utils/utils'
 import * as waveforms from '../utils/Waveform'
@@ -124,10 +125,20 @@ const App = () => {
         <Card className={classes.card}>
           <Logo />
         </Card>
-        <Button variant="outlined" sx={{ margin: '0' }}>
+        <Button
+          variant="outlined"
+          sx={{ margin: '0' }}
+          href="/blog"
+          startIcon={<BookIcon />}
+        >
           Blog
         </Button>
-        <Button variant="outlined" sx={{ margin: '0' }}>
+        <Button
+          variant="outlined"
+          sx={{ margin: '0' }}
+          startIcon={<GitHubIcon />}
+          href="https://github.com/RodrigoRoaRodriguez/animap"
+        >
           GitHub
         </Button>
         <HideOptionsButton />
