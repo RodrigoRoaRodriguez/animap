@@ -12,14 +12,13 @@ export const useHideOptionsStore = create<typeof initialState>(() => ({
 }))
 
 const showOptions = () => useHideOptionsStore.setState({ showOptions: true })
-
 const hideOptions = () => useHideOptionsStore.setState({ showOptions: false })
 
 export function HideOptionsButton() {
   return (
     <Button
       variant="contained"
-      sx={{ margin: '4px 8px', width: '92%' }}
+      sx={{ margin: '0', width: '100%' }}
       {...(useHideOptionsStore().showOptions
         ? {
             onClick: hideOptions,

@@ -52,19 +52,18 @@ const Root = styled('div')(({ theme }) => {
       `,
     },
     [`& .${classes.card}`]: {
-      padding: theme.spacing(2),
+      padding: theme.spacing(),
       textAlign: 'center',
-      margin: `${4}px ${theme.spacing()}`,
+      margin: 0,
     },
     [`& .${classes.options}`]: {
-      minWidth: '200px',
+      display: 'grid',
+      padding: theme.spacing(),
+      gap: theme.spacing(),
       gridArea: 'options',
-      [theme.breakpoints.down('md')]: {
-        display: 'flex',
-        placeItems: 'flex-end',
-        placeContent: 'flex-end',
-        justifyContent: 'space-between',
-      },
+      alignItems: 'start',
+      alignContent: 'flex-start',
+      maxWidth: '100vw',
     },
     [`& .${classes.controls}`]: {
       gridArea: 'controls',
@@ -129,10 +128,10 @@ const App = () => {
     <Root>
       <AnimatedHeatmap />
       <div className={classes.options}>
-        {/* <Card className={classes.card}> */}
-        <Logo />
-        {/* <Button>Blog</Button> */}
-        {/* </Card> */}
+        <Card className={classes.card}>
+          <Logo />
+          {/* <Button>Blog</Button> */}
+        </Card>
         {showOptions && (
           <>
             <Card className={classes.card}>
@@ -143,7 +142,7 @@ const App = () => {
                 value={waveform}
               />
             </Card>
-            <Card className={join(classes.card, classes.options)}>
+            <Card className={classes.card}>
               <Picker
                 title="Color scheme"
                 values={Object.keys(colorScales)}
@@ -151,10 +150,7 @@ const App = () => {
                 value={colorScale}
               />
             </Card>
-            <Card
-              sx={{ overflow: 'visible' }}
-              className={join(classes.card, classes.options)}
-            >
+            <Card sx={{ overflow: 'visible' }} className={classes.card}>
               <FormLabel component="legend">Noise</FormLabel>
               <Slider
                 value={noiseMagnitude}
