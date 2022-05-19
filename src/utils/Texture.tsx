@@ -1,9 +1,15 @@
-import * as React from 'react'
-import { useEffect, useRef } from 'react'
+import { HTMLProps, useEffect, useRef } from 'react'
 import initRegl from 'regl'
 
 const attributes = {
-  position: [[-1, 1], [1, 1], [-1, -1], [1, -1], [1, 1], [-1, -1]],
+  position: [
+    [-1, 1],
+    [1, 1],
+    [-1, -1],
+    [1, -1],
+    [1, 1],
+    [-1, -1],
+  ],
 }
 
 const frag = `
@@ -23,12 +29,12 @@ const vert = `
     gl_Position = vec4(2.0*uv.x - 1.0, 1.0-2.0*uv.y, 0, 1);
   }`
 
-interface TextureProps {
+const Texture = ({
+  pixels,
+  ...canvasProps
+}: {
   pixels: number[][][]
-}
-export type Props = TextureProps & React.HTMLAttributes<HTMLCanvasElement>
-
-const Texture = (props: Props) => {
+} & HTMLProps<HTMLCanvasElement>) => {
   const node = useRef(null)
   const regl: any = useRef(false)
 
@@ -42,14 +48,14 @@ const Texture = (props: Props) => {
         frag,
         attributes,
         uniforms: {
-          color: [1, 0, 0, 1],
-          texture: regl.current.texture(props.pixels),
+          // color: [1, 0, 0, 1],
+          texture: regl.current.texture(pixels),
         },
         count: attributes.position.length,
       })()
     }
   })
-  return <canvas {...props} ref={node} />
+  return <canvas {...canvasProps} ref={node} />
 }
 
 export default Texture
