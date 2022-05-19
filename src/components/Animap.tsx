@@ -89,11 +89,8 @@ const Root = styled('div')(({ theme }) => {
     },
   }
 })
-
-const PADDING = 0.2
-
-export const getSize = () => {
-  let size = Math.min(window.innerWidth, window.innerHeight) / (1.5 + PADDING)
+const getSize = () => {
+  let size = 0.95 * Math.min(window.innerWidth, window.innerHeight)
   return { width: size, height: size }
 }
 
@@ -201,6 +198,7 @@ function AnimatedHeatmap() {
       )}
       onClick={mainActionProps.onClick}
       className={classes.heatmap}
+      {...getSize()}
     />
   )
 }
