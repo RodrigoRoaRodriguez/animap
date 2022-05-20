@@ -1,3 +1,13 @@
+# Prerequisites
+
+[Node](https://nodejs.org/en/)
+
+# Setup
+
+1. Go to to root folder and run `npm install`
+2. Run `npm run start`
+3. Go to http://127.0.0.1:3000/
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
