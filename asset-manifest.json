@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.js": "./static/js/main.36e3dd1a.js",
-    "static/js/313.2840f823.chunk.js": "./static/js/313.2840f823.chunk.js",
-    "static/js/980.e9eb2837.chunk.js": "./static/js/980.e9eb2837.chunk.js",
-    "static/media/animap-logo.svg": "./static/media/animap-logo.bc14133cb460307fd64cb4c58611ba22.svg",
-    "index.html": "./index.html",
-    "main.36e3dd1a.js.map": "./static/js/main.36e3dd1a.js.map",
-    "313.2840f823.chunk.js.map": "./static/js/313.2840f823.chunk.js.map",
-    "980.e9eb2837.chunk.js.map": "./static/js/980.e9eb2837.chunk.js.map"
+    "main.js": "/animap/static/js/main.80a09047.js",
+    "static/js/313.2840f823.chunk.js": "/animap/static/js/313.2840f823.chunk.js",
+    "static/js/980.e9eb2837.chunk.js": "/animap/static/js/980.e9eb2837.chunk.js",
+    "static/media/animap-logo.svg": "/animap/static/media/animap-logo.bc14133cb460307fd64cb4c58611ba22.svg",
+    "index.html": "/animap/index.html",
+    "main.80a09047.js.map": "/animap/static/js/main.80a09047.js.map",
+    "313.2840f823.chunk.js.map": "/animap/static/js/313.2840f823.chunk.js.map",
+    "980.e9eb2837.chunk.js.map": "/animap/static/js/980.e9eb2837.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.36e3dd1a.js"
+    "static/js/main.80a09047.js"
   ]
 }
