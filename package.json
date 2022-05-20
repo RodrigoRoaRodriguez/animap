@@ -2,6 +2,7 @@
   "name": "animap",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/animap",
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
@@ -17,6 +18,7 @@
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.4",
     "d3": "^7.4.4",
+    "gh-pages": "^4.0.0",
     "prettier": "^2.6.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
@@ -32,6 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
