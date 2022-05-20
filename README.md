@@ -1,3 +1,5 @@
+## Try me at: https://rodrigoroarodriguez.github.io/animap/
+
 # Prerequisites
 
 [Node](https://nodejs.org/en/)
